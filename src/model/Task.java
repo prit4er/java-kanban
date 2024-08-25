@@ -1,7 +1,11 @@
+package model;
+
+import java.util.Objects;
+
 public class Task {
     private String name;
     private String description;
-    private int id;
+    private Integer id;
     private Status status;
 
     public Task(String name, String description, int id, Status status) {
@@ -11,16 +15,32 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description, int id) {
+        this(name, description, id, Status.NEW); // Устанавливаем статус по умолчанию
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Status getStatus() {
@@ -32,6 +52,19 @@ public class Task {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Task task = (Task) obj;
+        return id == task.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
     public String toString() {
         return "Task{" +
                 "name='" + name + '\'' +
@@ -39,9 +72,5 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 '}';
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }
