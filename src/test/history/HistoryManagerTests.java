@@ -5,13 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import model.Task;
-import managers.historyManager.HistoryManager;
 import managers.historyManager.InMemoryHistoryManager; // Используем конкретный менеджер истории
 import java.util.List;
 
 public class HistoryManagerTests {
 
-    private HistoryManager historyManager;
+    private InMemoryHistoryManager historyManager; // Используем конкретный тип менеджера
 
     @BeforeEach
     void init() {

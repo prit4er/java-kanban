@@ -131,4 +131,24 @@ public class TaskManagerTests {
         assertEquals(task.getStatus(), retrievedTask.getStatus(), "Статус задачи должен оставаться неизменным после извлечения.");
     }
 
+    // 9. Новый тест для метода updateEpic
+    @Test
+    void updateEpic_shouldUpdateEpicDetails() {
+        // given
+        Epic originalEpic = new Epic("Original Epic", "Original Description", 1);
+        taskManager.addEpic(originalEpic);
+
+        // Обновляем эпик с новыми данными
+        Epic updatedEpic = new Epic("Updated Epic", "Updated Description", originalEpic.getId());
+
+        // when
+        taskManager.updateEpic(updatedEpic);
+
+        // then
+        Epic retrievedEpic = taskManager.getEpic(originalEpic.getId());
+        assertNotNull(retrievedEpic, "Эпик должен быть найден в менеджере задач.");
+        assertEquals("Updated Epic", retrievedEpic.getName(), "Название эпика должно быть обновлено.");
+        assertEquals("Updated Description", retrievedEpic.getDescription(), "Описание эпика должно быть обновлено.");
+    }
+
 }

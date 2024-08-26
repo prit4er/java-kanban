@@ -145,6 +145,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public Epic updateEpic(Epic updatedEpic) {
+        Epic existingEpic = epics.get(updatedEpic.getId());
+        if (existingEpic != null) {
+            // Обновляем только те поля, которые действительно изменились
+            if (updatedEpic.getName() != null) {
+                existingEpic.setName(updatedEpic.getName());
+            }
+            if (updatedEpic.getDescription() != null) {
+                existingEpic.setDescription(updatedEpic.getDescription());
+            }
+            // Статус эпика может зависеть от подзадач, поэтому его не обновляем напрямую
+            updateEpicStatus(existingEpic);
+        }
+        return existingEpic;  // Возвращаем обновленный epic
+    }
+
+    @Override
     public Subtask updateSubtask(Subtask updatedSubtask) {
         Subtask existingSubtask = subtasks.get(updatedSubtask.getId());
         if (existingSubtask != null) {

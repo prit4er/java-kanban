@@ -1,3 +1,7 @@
+import model.Status;
+import model.Subtask;
+import model.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 
