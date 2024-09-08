@@ -1,2 +1,2 @@
-./src/test/tasks/TaskManagerTests.java
-./src/test/history/HistoryManagerTests.java
+./test/HistoryManagerTests.java
+./test/TaskManagerTests.java
