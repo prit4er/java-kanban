@@ -1,4 +1,4 @@
-package test.tasks;
+package test.java.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -127,7 +127,8 @@ public class TaskManagerTests {
 
         // Проверяем, что задача после извлечения из менеджера осталась неизменной
         assertEquals(task.getName(), retrievedTask.getName(), "Имя задачи должно оставаться неизменным после извлечения.");
-        assertEquals(task.getDescription(), retrievedTask.getDescription(), "Описание задачи должно оставаться неизменным после извлечения.");
+        assertEquals(task.getDescription(), retrievedTask.getDescription(),
+                     "Описание задачи должно оставаться неизменным после извлечения.");
         assertEquals(task.getStatus(), retrievedTask.getStatus(), "Статус задачи должен оставаться неизменным после извлечения.");
     }
 
