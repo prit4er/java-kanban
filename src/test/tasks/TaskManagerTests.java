@@ -1,4 +1,4 @@
-package test.java.tasks;
+package test.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
 

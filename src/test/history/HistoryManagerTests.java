@@ -1,4 +1,4 @@
-package test.java.history;
+package test.history;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
