@@ -1,9 +1,9 @@
-package managers;
+package main.managers;
 
-import managers.historyManager.HistoryManager;
-import managers.historyManager.InMemoryHistoryManager;
-import managers.taskManager.InMemoryTaskManager;
-import managers.taskManager.TaskManager;
+import main.managers.java.historyManager.HistoryManager;
+import main.managers.java.historyManager.InMemoryHistoryManager;
+import main.managers.java.taskManager.InMemoryTaskManager;
+import main.managers.java.taskManager.TaskManager;
 
 public class Managers {
 
