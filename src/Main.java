@@ -1,5 +1,5 @@
 import main.managers.Managers;
-import main.managers.java.taskManager.TaskManager;
+import main.managers.taskManager.TaskManager;
 import main.model.Epic;
 import main.model.Status;
 import main.model.Subtask;

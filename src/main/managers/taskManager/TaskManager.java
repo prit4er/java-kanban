@@ -1,4 +1,4 @@
-package main.managers.java.taskManager;
+package main.managers.taskManager;
 
 import main.model.Task;
 import main.model.Epic;

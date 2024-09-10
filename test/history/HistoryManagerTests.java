@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import main.model.Task;
-import main.managers.java.historyManager.InMemoryHistoryManager; // Используем конкретный менеджер истории
+import main.managers.historyManager.InMemoryHistoryManager; // Используем конкретный менеджер истории
 
 import java.util.List;
 

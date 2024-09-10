@@ -1,7 +1,7 @@
-package main.managers.java.taskManager;
+package main.managers.taskManager;
 
 import main.managers.Managers;
-import main.managers.java.historyManager.HistoryManager;
+import main.managers.historyManager.HistoryManager;
 import main.model.Epic;
 import main.model.Status;
 import main.model.Subtask;
