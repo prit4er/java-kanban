@@ -1,4 +1,4 @@
-package main.managers.historyManager;
+package main.managers.history;
 
 import main.model.Task;
 

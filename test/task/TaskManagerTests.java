@@ -2,14 +2,14 @@ package test.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import main.managers.taskManager.InMemoryTaskManager;
+import main.managers.task.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import main.model.Task;
 import main.model.Subtask;
 import main.model.Epic;
 import main.model.Status;
-import main.managers.taskManager.TaskManager;
+import main.managers.task.TaskManager;
 import main.managers.Managers;
 
 public class TaskManagerTests {

@@ -1,7 +1,7 @@
-package main.managers.taskManager;
+package main.managers.task;
 
 import main.managers.Managers;
-import main.managers.historyManager.HistoryManager;
+import main.managers.history.HistoryManager;
 import main.model.Epic;
 import main.model.Status;
 import main.model.Subtask;
