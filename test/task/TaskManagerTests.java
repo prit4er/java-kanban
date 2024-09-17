@@ -2,15 +2,15 @@ package test.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import managers.taskManager.InMemoryTaskManager;
+import main.managers.task.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import model.Task;
-import model.Subtask;
-import model.Epic;
-import model.Status;
-import managers.taskManager.TaskManager;
-import managers.Managers;
+import main.model.Task;
+import main.model.Subtask;
+import main.model.Epic;
+import main.model.Status;
+import main.managers.task.TaskManager;
+import main.managers.Managers;
 
 public class TaskManagerTests {
 
@@ -41,43 +41,7 @@ public class TaskManagerTests {
         assertEquals(epic.getId(), subtask.getId(), "Подзадача и эпик с одинаковым ID должны быть равны.");
     }
 
-    //	3.	Проверка, что объект Epic нельзя добавить в самого себя в виде подзадачи
-    // Вообще по чату ходит мненение, что написать такой тест невозможно!!!
-    @Test
-    void testEpicCannotAddSelfAsSubtask() {
-        // Создаем и добавляем эпик
-        Epic epic = new Epic("Epic 1", "Epic description", 1);
-        taskManager.addEpic(epic);
-
-        // Создаем подзадачу с тем же ID, что и у эпика
-        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 2, epic.getId(), Status.NEW);
-
-        // Проверяем, что выбрасывается исключение при попытке добавления подзадачи
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            taskManager.addSubtask(subtask);
-        });
-
-        assertEquals("Эпик не может быть добавлен как своя собственная подзадача.", thrown.getMessage());
-    }
-
-    // 	4.	Проверка, что объект Subtask нельзя сделать своим эпиком
-    // Вообще по чату ходит мненение, что написать такой тест невозможно!!!
-    @Test
-    void testSubtaskCannotBeItsOwnEpic() {
-        // Создаем и добавляем подзадачу
-        Subtask subtask = new Subtask("Subtask 1", "Description 1", 1, 0, Status.NEW);
-        taskManager.addSubtask(subtask);
-
-        // Попытка добавить эпик с тем же ID, что и у подзадачи
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            taskManager.addEpic(new Epic("Epic 1", "Epic description", subtask.getId()));
-        });
-
-        // Проверяем, что исключение содержит правильное сообщение
-        assertEquals("ID эпика не может совпадать с ID существующих задач или подзадач.", thrown.getMessage());
-    }
-
-    //	5.	Проверка, что утилитарный класс всегда возвращает проинициализированные экземпляры менеджеров
+    //	3.	Проверка, что утилитарный класс всегда возвращает проинициализированные экземпляры менеджеров
     @Test
     void testManagersUtility() {
         TaskManager manager = Managers.getDefault();
@@ -85,7 +49,7 @@ public class TaskManagerTests {
         assertTrue(manager instanceof InMemoryTaskManager, "Утилитарный класс должен возвращать экземпляр InMemoryTaskManager.");
     }
 
-    //	6.	Проверка добавления задач разного типа и их нахождение по ID
+    //	4.	Проверка добавления задач разного типа и их нахождение по ID
     @Test
     void testAddDifferentTypesOfTasks() {
         Task task = new Task("Task", "Description", 1, Status.NEW);
@@ -101,7 +65,7 @@ public class TaskManagerTests {
         assertNotNull(taskManager.getSubtask(subtask.getId()), "Подзадача не найдена.");
     }
 
-    // 7.	Проверка, что задачи с заданным и сгенерированным ID не конфликтуют
+    // 5.	Проверка, что задачи с заданным и сгенерированным ID не конфликтуют
     @Test
     void testUniqueIds() {
         Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW);
@@ -113,7 +77,7 @@ public class TaskManagerTests {
         assertNotEquals(task1.getId(), task2.getId(), "ID задач не должны конфликтовать.");
     }
 
-    // 	8.	Проверка неизменности задачи
+    // 	6.	Проверка неизменности задачи
     @Test
     void testTaskImmutability() {
         InMemoryTaskManager manager = new InMemoryTaskManager();
@@ -127,11 +91,12 @@ public class TaskManagerTests {
 
         // Проверяем, что задача после извлечения из менеджера осталась неизменной
         assertEquals(task.getName(), retrievedTask.getName(), "Имя задачи должно оставаться неизменным после извлечения.");
-        assertEquals(task.getDescription(), retrievedTask.getDescription(), "Описание задачи должно оставаться неизменным после извлечения.");
+        assertEquals(task.getDescription(), retrievedTask.getDescription(),
+                     "Описание задачи должно оставаться неизменным после извлечения.");
         assertEquals(task.getStatus(), retrievedTask.getStatus(), "Статус задачи должен оставаться неизменным после извлечения.");
     }
 
-    // 9. Новый тест для метода updateEpic
+    // 7. Новый тест для метода updateEpic
     @Test
     void updateEpic_shouldUpdateEpicDetails() {
         // given

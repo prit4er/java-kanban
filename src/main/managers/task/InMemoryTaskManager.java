@@ -1,11 +1,11 @@
-package managers.taskManager;
+package main.managers.task;
 
-import managers.Managers;
-import managers.historyManager.HistoryManager;
-import model.Epic;
-import model.Status;
-import model.Subtask;
-import model.Task;
+import main.managers.Managers;
+import main.managers.history.HistoryManager;
+import main.model.Epic;
+import main.model.Status;
+import main.model.Subtask;
+import main.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
+
     private int currentId = 0;  // Счётчик для генерации уникальных идентификаторов
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
@@ -209,28 +210,32 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        tasks.remove(id);
+        tasks.remove(id); // Удаляем задачу из основного хранилища
+        historyManager.remove(id); // Удаляем задачу из истории
     }
 
     @Override
     public void deleteEpicById(int id) {
-        Epic epic = epics.remove(id);
+        Epic epic = epics.remove(id); // Удаляем эпик из основного хранилища
         if (epic != null) {
-            for (int subtaskId : epic.getSubtaskIds()) {
-                subtasks.remove(subtaskId);
+            // Удаляем все подзадачи, связанные с этим эпиком
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId); // Удаляем подзадачи из основного хранилища
+                historyManager.remove(subtaskId); // Удаляем подзадачи из истории
             }
+            historyManager.remove(id); // Удаляем сам эпик из истории
         }
     }
 
     @Override
-    public void deleteSubtaskById(int subtaskId) {
-        Subtask subtask = subtasks.remove(subtaskId);
+    public void deleteSubtaskById(int id) {
+        Subtask subtask = subtasks.remove(id); // Удаляем подзадачу из основного хранилища
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                epic.removeSubtaskId(subtaskId);
-                updateEpicStatus(epic);
+                epic.removeSubtaskId(id); // Обновляем эпик, удаляя связь с подзадачей
             }
+            historyManager.remove(id); // Удаляем подзадачу из истории
         }
     }
 
