@@ -7,35 +7,45 @@ import main.model.Status;
 import main.model.Subtask;
 import main.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
     private int currentId = 0;  // Счётчик для генерации уникальных идентификаторов
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
 
-    // Конструктор, принимающий HistoryManager
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
     }
 
-    // Конструктор по умолчанию, использующий стандартный HistoryManager
     public InMemoryTaskManager() {
         this(Managers.getDefaultHistory());
     }
 
-    // Метод для генерации уникальных идентификаторов
+    // Генерация уникального идентификатора
     private int generateId() {
         return ++currentId;
     }
 
-    // Методы для работы с задачами
+    // Общий метод добавления задач, эпиков и подзадач
+    private <T extends Task> T addTaskToMap(Map<Integer, T> map, T task) {
+        task.setId(generateId());
+        map.put(task.getId(), task);
+        return task;
+    }
+
+    // Общий метод обновления задач, эпиков и подзадач
+    private <T extends Task> T updateTaskInMap(Map<Integer, T> map, T updatedTask) {
+        T existingTask = map.get(updatedTask.getId());
+        if (existingTask != null) {
+            existingTask.updateFrom(updatedTask);
+        }
+        return existingTask;
+    }
+
     @Override
     public List<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
@@ -53,9 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task addTask(Task task) {
-        task.setId(generateId());
-        tasks.put(task.getId(), task);
-        return task;  // Возвращаем добавленный task
+        return addTaskToMap(tasks, task);
     }
 
     @Override
@@ -63,50 +71,39 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(epic.getId()) || subtasks.containsKey(epic.getId())) {
             throw new IllegalArgumentException("ID эпика не может совпадать с ID существующих задач или подзадач.");
         }
-        epic.setId(generateId());
-        epics.put(epic.getId(), epic);
-        return epic;  // Возвращаем добавленный epic
+        return addTaskToMap(epics, epic);
     }
 
     @Override
     public Subtask addSubtask(Subtask subtask) {
-        if (epics.get(subtask.getEpicId()) == null) {
+        Epic epic = epics.get(subtask.getEpicId());
+        if (epic == null) {
             throw new IllegalArgumentException("Эпик с таким ID не существует.");
         }
-        if (subtask.getId() <= 0) { // Ensure ID is valid
-            subtask.setId(generateId());
-        }
-        subtasks.put(subtask.getId(), subtask);
-        Epic epic = epics.get(subtask.getEpicId());
+        Subtask addedSubtask = addTaskToMap(subtasks, subtask);
         epic.addSubtaskId(subtask.getId());
         updateEpicStatus(epic);
-        return subtask;  // Возвращаем добавленный subtask
+        return addedSubtask;
     }
 
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
-        if (task != null) {
-            historyManager.add(task); // Добавляем в историю
-        }
+        addToHistory(task);
         return task;
     }
 
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
-        if (epic != null) {
-            historyManager.add(epic); // Добавляем в историю
-        }
+        addToHistory(epic);
         return epic;
     }
 
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            historyManager.add(subtask); // Добавляем в историю
-        }
+        addToHistory(subtask);
         return subtask;
     }
 
@@ -114,7 +111,7 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Subtask> getSubtasksByEpic(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         List<Subtask> result = new ArrayList<>();
@@ -128,60 +125,29 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task updateTask(Task updatedTask) {
-        Task existingTask = tasks.get(updatedTask.getId());
-        if (existingTask != null) {
-            // Обновляем только те поля, которые действительно изменились
-            if (updatedTask.getName() != null) {
-                existingTask.setName(updatedTask.getName());
-            }
-            if (updatedTask.getDescription() != null) {
-                existingTask.setDescription(updatedTask.getDescription());
-            }
-            if (updatedTask.getStatus() != null) {
-                existingTask.setStatus(updatedTask.getStatus());
-            }
-        }
-        return existingTask;  // Возвращаем обновленный task
+    public Task updateTask(Task task) {
+        return updateTaskInMap(tasks, task);
     }
 
     @Override
-    public Epic updateEpic(Epic updatedEpic) {
-        Epic existingEpic = epics.get(updatedEpic.getId());
-        if (existingEpic != null) {
-            // Обновляем только те поля, которые действительно изменились
-            if (updatedEpic.getName() != null) {
-                existingEpic.setName(updatedEpic.getName());
-            }
-            if (updatedEpic.getDescription() != null) {
-                existingEpic.setDescription(updatedEpic.getDescription());
-            }
-            // Статус эпика может зависеть от подзадач, поэтому его не обновляем напрямую
-            updateEpicStatus(existingEpic);
-        }
-        return existingEpic;  // Возвращаем обновленный epic
+    public Epic updateEpic(Epic epic) {
+        Epic updatedEpic = updateTaskInMap(epics, epic);
+        updateEpicStatus(updatedEpic);
+        return updatedEpic;
     }
 
     @Override
-    public Subtask updateSubtask(Subtask updatedSubtask) {
-        Subtask existingSubtask = subtasks.get(updatedSubtask.getId());
-        if (existingSubtask != null) {
-            existingSubtask.setName(updatedSubtask.getName());
-            existingSubtask.setDescription(updatedSubtask.getDescription());
-            existingSubtask.setStatus(updatedSubtask.getStatus());
-            existingSubtask.setEpicId(updatedSubtask.getEpicId());
-            // Обновляем статус эпика
-            Epic epic = epics.get(existingSubtask.getEpicId());
-            if (epic != null) {
-                updateEpicStatus(epic);
-            }
+    public Subtask updateSubtask(Subtask subtask) {
+        Subtask updatedSubtask = updateTaskInMap(subtasks, subtask);
+        Epic epic = epics.get(updatedSubtask.getEpicId());
+        if (epic != null) {
+            updateEpicStatus(epic);
         }
-        return existingSubtask;  // Возвращаем обновленный subtask
+        return updatedSubtask;
     }
 
     private void updateEpicStatus(Epic epic) {
         List<Subtask> subtasks = getSubtasksByEpic(epic.getId());
-
         if (subtasks.isEmpty()) {
             epic.setStatus(Status.NEW);
             return;
@@ -210,37 +176,47 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        tasks.remove(id); // Удаляем задачу из основного хранилища
-        historyManager.remove(id); // Удаляем задачу из истории
+        deleteFromMapById(tasks, id);
     }
 
     @Override
     public void deleteEpicById(int id) {
-        Epic epic = epics.remove(id); // Удаляем эпик из основного хранилища
+        Epic epic = epics.remove(id);
         if (epic != null) {
-            // Удаляем все подзадачи, связанные с этим эпиком
             for (Integer subtaskId : epic.getSubtaskIds()) {
-                subtasks.remove(subtaskId); // Удаляем подзадачи из основного хранилища
-                historyManager.remove(subtaskId); // Удаляем подзадачи из истории
+                subtasks.remove(subtaskId);
+                historyManager.remove(subtaskId);
             }
-            historyManager.remove(id); // Удаляем сам эпик из истории
+            historyManager.remove(id);
         }
     }
 
     @Override
     public void deleteSubtaskById(int id) {
-        Subtask subtask = subtasks.remove(id); // Удаляем подзадачу из основного хранилища
+        Subtask subtask = subtasks.remove(id);
         if (subtask != null) {
             Epic epic = epics.get(subtask.getEpicId());
             if (epic != null) {
-                epic.removeSubtaskId(id); // Обновляем эпик, удаляя связь с подзадачей
+                epic.removeSubtaskId(id);
+                updateEpicStatus(epic);
             }
-            historyManager.remove(id); // Удаляем подзадачу из истории
+            historyManager.remove(id);
         }
     }
 
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    private void deleteFromMapById(Map<Integer, ? extends Task> map, int id) {
+        map.remove(id);
+        historyManager.remove(id);
+    }
+
+    private void addToHistory(Task task) {
+        if (task != null) {
+            historyManager.add(task);
+        }
     }
 }

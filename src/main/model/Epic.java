@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
+
     private final List<Integer> subtaskIds;  // Список идентификаторов подзадач
 
     public Epic(String name, String description, int id) {
@@ -21,5 +22,10 @@ public class Epic extends Task {
 
     public void removeSubtaskId(int subtaskId) {
         subtaskIds.remove(Integer.valueOf(subtaskId));
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC; // Для эпиков возвращаем EPIC
     }
 }

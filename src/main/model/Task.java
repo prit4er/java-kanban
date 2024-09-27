@@ -3,6 +3,7 @@ package main.model;
 import java.util.Objects;
 
 public class Task {
+
     private String name;
     private String description;
     private Integer id;
@@ -51,12 +52,30 @@ public class Task {
         this.status = status;
     }
 
+    // Новый метод для получения типа задачи
+    public TaskType getType() {
+        return TaskType.TASK; // Для обычных задач возвращаем TASK
+    }
+
+    // Метод для обновления полей задачи
+    public void updateFrom(Task updatedTask) {
+        if (updatedTask.getName() != null) {
+            this.name = updatedTask.getName();
+        }
+        if (updatedTask.getDescription() != null) {
+            this.description = updatedTask.getDescription();
+        }
+        if (updatedTask.getStatus() != null) {
+            this.status = updatedTask.getStatus();
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Task task = (Task) obj;
-        return id == task.id;
+        return Objects.equals(id, task.id);
     }
 
     @Override
