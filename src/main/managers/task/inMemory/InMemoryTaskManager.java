@@ -1,7 +1,8 @@
-package main.managers.task;
+package main.managers.task.inMemory;
 
 import main.managers.Managers;
 import main.managers.history.HistoryManager;
+import main.managers.task.TaskManager;
 import main.model.Epic;
 import main.model.Status;
 import main.model.Subtask;
@@ -38,12 +39,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // Общий метод обновления задач, эпиков и подзадач
-    private <T extends Task> T updateTaskInMap(Map<Integer, T> map, T updatedTask) {
-        T existingTask = map.get(updatedTask.getId());
-        if (existingTask != null) {
-            existingTask.updateFrom(updatedTask);
-        }
-        return existingTask;
+    private <T extends Task> T updateTaskInMap(Map<Integer, T> map, T task) {
+        map.put(task.getId(), task);
+        return task;
     }
 
     @Override

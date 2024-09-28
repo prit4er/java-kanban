@@ -2,7 +2,7 @@ package main.managers;
 
 import main.managers.history.HistoryManager;
 import main.managers.history.InMemoryHistoryManager;
-import main.managers.task.InMemoryTaskManager;
+import main.managers.task.inMemory.InMemoryTaskManager;
 import main.managers.task.TaskManager;
 
 public class Managers {

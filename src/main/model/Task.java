@@ -57,19 +57,6 @@ public class Task {
         return TaskType.TASK; // Для обычных задач возвращаем TASK
     }
 
-    // Метод для обновления полей задачи
-    public void updateFrom(Task updatedTask) {
-        if (updatedTask.getName() != null) {
-            this.name = updatedTask.getName();
-        }
-        if (updatedTask.getDescription() != null) {
-            this.description = updatedTask.getDescription();
-        }
-        if (updatedTask.getStatus() != null) {
-            this.status = updatedTask.getStatus();
-        }
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

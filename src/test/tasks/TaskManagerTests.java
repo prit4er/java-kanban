@@ -2,8 +2,9 @@ package test.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import main.managers.task.InMemoryTaskManager;
+import main.managers.task.inMemory.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import main.model.Task;
 import main.model.Subtask;
@@ -21,8 +22,8 @@ public class TaskManagerTests {
         taskManager = new InMemoryTaskManager(); // Используем конкретный менеджер задач
     }
 
-    // 	1.	Проверка равенства объектов Task по ID
     @Test
+    @DisplayName("1. Проверка равенства объектов Task по ID")
     void testTaskEqualityById() {
         Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW);
         Task task2 = new Task("Task 2", "Description 2", 1, Status.NEW);
@@ -31,8 +32,8 @@ public class TaskManagerTests {
         assertEquals(task1.getId(), task2.getId(), "Задачи с одинаковым ID должны быть равны.");
     }
 
-    // 	2.	Проверка равенства наследников класса Task по ID
     @Test
+    @DisplayName("2. Проверка равенства наследников класса Task по ID")
     void testSubtaskAndEpicEqualityById() {
         Epic epic = new Epic("Epic 1", "Description 1", 1);
         Subtask subtask = new Subtask("Subtask 1", "Description 1", 1, epic.getId(), Status.NEW);
@@ -41,16 +42,16 @@ public class TaskManagerTests {
         assertEquals(epic.getId(), subtask.getId(), "Подзадача и эпик с одинаковым ID должны быть равны.");
     }
 
-    //	3.	Проверка, что утилитарный класс всегда возвращает проинициализированные экземпляры менеджеров
     @Test
+    @DisplayName("3. Проверка, что утилитарный класс всегда возвращает проинициализированные экземпляры менеджеров")
     void testManagersUtility() {
         TaskManager manager = Managers.getDefault();
         assertNotNull(manager, "Утилитарный класс должен возвращать инициализированный экземпляр менеджера.");
-        assertTrue(manager instanceof InMemoryTaskManager, "Утилитарный класс должен возвращать экземпляр InMemoryTaskManager.");
+        assertInstanceOf(InMemoryTaskManager.class, manager, "Утилитарный класс должен возвращать экземпляр InMemoryTaskManager.");
     }
 
-    //	4.	Проверка добавления задач разного типа и их нахождение по ID
     @Test
+    @DisplayName("4. Проверка добавления задач разного типа и их нахождение по ID")
     void testAddDifferentTypesOfTasks() {
         Task task = new Task("Task", "Description", 1, Status.NEW);
         Epic epic = new Epic("Epic", "Description", 2);
@@ -65,8 +66,8 @@ public class TaskManagerTests {
         assertNotNull(taskManager.getSubtask(subtask.getId()), "Подзадача не найдена.");
     }
 
-    // 5.	Проверка, что задачи с заданным и сгенерированным ID не конфликтуют
     @Test
+    @DisplayName("5. Проверка, что задачи с заданным и сгенерированным ID не конфликтуют")
     void testUniqueIds() {
         Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW);
         Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW);
@@ -77,8 +78,8 @@ public class TaskManagerTests {
         assertNotEquals(task1.getId(), task2.getId(), "ID задач не должны конфликтовать.");
     }
 
-    // 	6.	Проверка неизменности задачи
     @Test
+    @DisplayName("6. Проверка неизменности задачи")
     void testTaskImmutability() {
         InMemoryTaskManager manager = new InMemoryTaskManager();
 
@@ -96,8 +97,8 @@ public class TaskManagerTests {
         assertEquals(task.getStatus(), retrievedTask.getStatus(), "Статус задачи должен оставаться неизменным после извлечения.");
     }
 
-    // 7. Новый тест для метода updateEpic
     @Test
+    @DisplayName("7. Новый тест для метода updateEpic")
     void updateEpic_shouldUpdateEpicDetails() {
         // given
         Epic originalEpic = new Epic("Original Epic", "Original Description", 1);
