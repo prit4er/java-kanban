@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest extends TaskManagerTests {
+public class FileBackedTaskManagerTest {
 
     private FileBackedTaskManager manager;
     private File tempFile;
