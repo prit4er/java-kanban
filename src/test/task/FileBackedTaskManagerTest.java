@@ -1,4 +1,4 @@
-package test.tasks;
+package test.task;
 
 import main.managers.task.fileBacked.FileBackedTaskManager;
 import main.model.Epic;
@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
+public class FileBackedTaskManagerTest extends TaskManagerTests {
 
     private FileBackedTaskManager manager;
     private File tempFile;
