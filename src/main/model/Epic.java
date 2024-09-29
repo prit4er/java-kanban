@@ -24,8 +24,20 @@ public class Epic extends Task {
         subtaskIds.remove(Integer.valueOf(subtaskId));
     }
 
+    public static Epic fromCsvString(String[] fields) {
+        int id = Integer.parseInt(fields[0]);
+        String name = fields[2];
+        String description = fields[4];
+        return new Epic(name, description, id);
+    }
+
     @Override
     public TaskType getType() {
         return TaskType.EPIC; // Для эпиков возвращаем EPIC
+    }
+
+    @Override
+    public String toCsvString() {
+        return super.toCsvString();  // Для Epic дополнительные поля не нужны
     }
 }

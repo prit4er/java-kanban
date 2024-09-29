@@ -1,8 +1,8 @@
-package main.managers.task.inMemory;
+package main.manager.task.inMemory;
 
-import main.managers.Managers;
-import main.managers.history.HistoryManager;
-import main.managers.task.TaskManager;
+import main.manager.Managers;
+import main.manager.history.HistoryManager;
+import main.manager.task.TaskManager;
 import main.model.Epic;
 import main.model.Status;
 import main.model.Subtask;

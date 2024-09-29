@@ -2,7 +2,7 @@ package test.task;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import main.managers.task.inMemory.InMemoryTaskManager;
+import main.manager.task.inMemory.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,8 +10,8 @@ import main.model.Task;
 import main.model.Subtask;
 import main.model.Epic;
 import main.model.Status;
-import main.managers.task.TaskManager;
-import main.managers.Managers;
+import main.manager.task.TaskManager;
+import main.manager.Managers;
 
 public class TaskManagerTests {
 

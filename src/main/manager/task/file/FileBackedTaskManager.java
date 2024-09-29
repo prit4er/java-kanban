@@ -1,11 +1,10 @@
-package main.managers.task.fileBacked;
+package main.manager.task.file;
 
-import main.managers.task.inMemory.InMemoryTaskManager;
+import main.manager.task.inMemory.InMemoryTaskManager;
 import main.model.Epic;
 import main.model.Status;
 import main.model.Subtask;
 import main.model.Task;
-import main.model.TaskType;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -65,41 +64,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Ошибка при чтении данных из файла");
         }
         return manager;
-    }
-
-    public static class CsvTaskConverter {
-
-        // Преобразование задачи в строку для сохранения в файл
-        private static String taskToString(Task task) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(task.getId()).append(",");
-            sb.append(task.getType()).append(",");
-            sb.append(task.getName()).append(",");
-            sb.append(task.getStatus()).append(",");
-            sb.append(task.getDescription()).append(",");
-            if (task instanceof Subtask) {
-                sb.append(((Subtask) task).getEpicId());
-            }
-            return sb.toString();
-        }
-
-        public static Task taskFromString(String value) {
-            String[] fields = value.split(",");
-            int id = Integer.parseInt(fields[0]);
-            TaskType type = TaskType.valueOf(fields[1]);
-            String name = fields[2];
-            Status status = Status.valueOf(fields[3]);
-            String description = fields[4];
-
-            return switch (type) {
-                case TASK -> new Task(name, description, id, status);
-                case EPIC -> new Epic(name, description, id);
-                case SUBTASK -> {
-                    int epicId = Integer.parseInt(fields[5]);
-                    yield new Subtask(name, description, id, epicId, status);
-                }
-            };
-        }
     }
 
     // Пример переопределения метода для добавления задачи
