@@ -8,7 +8,7 @@ public class Task {
     private String description;
     private Integer id;
     private Status status;
-    protected TaskType type;
+    protected TaskType type;  // Новое поле для типа задачи
 
     // Основной конструктор
     public Task(String name, String description, int id, Status status) {
@@ -16,12 +16,12 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
-        this.type = TaskType.TASK; // Устанавливаем тип задачи как TASK
+        this.type = TaskType.TASK;  // По умолчанию, тип задачи — TASK
     }
 
     // Конструктор с установкой статуса по умолчанию
     public Task(String name, String description, int id) {
-        this(name, description, id, Status.NEW); // Статус по умолчанию - NEW
+        this(name, description, id, Status.NEW);
     }
 
     // Геттеры и сеттеры
@@ -57,28 +57,9 @@ public class Task {
         this.status = status;
     }
 
-    // Метод для получения типа задачи
+    // Геттер для поля type
     public TaskType getType() {
         return type;
-    }
-
-    // Метод для преобразования задачи в CSV-строку
-    public String toCsvString() {
-        return String.format("%d,%s,%s,%s,%s",
-                             id,
-                             getType(), // Используем getType() для получения типа
-                             name,
-                             status,
-                             description);
-    }
-
-    // Метод для создания задачи из CSV-строки
-    public static Task fromCsvString(String[] fields) {
-        int id = Integer.parseInt(fields[0]);
-        String name = fields[2];
-        Status status = Status.valueOf(fields[3]);
-        String description = fields[4];
-        return new Task(name, description, id, status);
     }
 
     // Переопределение методов equals и hashCode

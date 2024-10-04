@@ -5,11 +5,18 @@ import java.util.List;
 
 public class Epic extends Task {
 
-    private final List<Integer> subtaskIds;  // Список идентификаторов подзадач
+    private final List<Integer> subtaskIds;
 
     public Epic(String name, String description, int id) {
         super(name, description, id);
         this.subtaskIds = new ArrayList<>();
+        this.type = TaskType.EPIC;  // Устанавливаем тип задачи как EPIC
+    }
+
+    // Геттер для поля type
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     public List<Integer> getSubtaskIds() {
@@ -22,22 +29,5 @@ public class Epic extends Task {
 
     public void removeSubtaskId(int subtaskId) {
         subtaskIds.remove(Integer.valueOf(subtaskId));
-    }
-
-    public static Epic fromCsvString(String[] fields) {
-        int id = Integer.parseInt(fields[0]);
-        String name = fields[2];
-        String description = fields[4];
-        return new Epic(name, description, id);
-    }
-
-    @Override
-    public TaskType getType() {
-        return TaskType.EPIC; // Для эпиков возвращаем EPIC
-    }
-
-    @Override
-    public String toCsvString() {
-        return super.toCsvString();  // Для Epic дополнительные поля не нужны
     }
 }

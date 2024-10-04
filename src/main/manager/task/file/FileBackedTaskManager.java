@@ -22,8 +22,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     // Метод автосохранения данных
     private void save() {
         try (Writer writer = new FileWriter(file)) {
-            writer.write("id,type,name,status,description,epic\n");  // Заголовок CSV
-            // Сохраняем все задачи, эпики и подзадачи
+            // Используем заголовок CSV из CsvTaskConverter
+            writer.write(CsvTaskConverter.getCsvHeader() + "\n");
+
+            // Сохраняем все задачи, эпики и подзадачи, используя соответствующие методы преобразования
             for (Task task : tasks.values()) {
                 writer.write(CsvTaskConverter.taskToString(task) + "\n");
             }
@@ -46,7 +48,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             // Проверяем, есть ли строки для обработки (проверка на пустоту файла)
             if (lines.size() > 1) { // Если есть строки, кроме заголовка
                 for (String line : lines.subList(1, lines.size())) { // Пропускаем заголовок
-                    Task task = CsvTaskConverter.taskFromString(line);
+                    Task task = CsvTaskConverter.taskFromString(line.split(",")); // Преобразуем строку обратно в задачу
                     switch (task.getType()) {
                         case TASK:
                             manager.tasks.put(task.getId(), task);
@@ -66,11 +68,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return manager;
     }
 
-    // Пример переопределения метода для добавления задачи
+    // Переопределяем методы для добавления и обновления задач с автосохранением
     @Override
     public Task addTask(Task task) {
         super.addTask(task);
-        save(); // После добавления задачи сохраняем данные
+        save(); // Сохраняем после добавления
         return task;
     }
 
@@ -114,12 +116,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return epic;
     }
 
+    // Переопределяем методы удаления задач с автосохранением
     @Override
     public void deleteTaskById(int id) {
         super.deleteTaskById(id);
         save();
     }
-
 
     @Override
     public void deleteEpicById(int id) {
