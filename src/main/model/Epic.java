@@ -4,11 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subtaskIds;  // Список идентификаторов подзадач
+
+    private final List<Integer> subtaskIds;
 
     public Epic(String name, String description, int id) {
         super(name, description, id);
         this.subtaskIds = new ArrayList<>();
+        this.type = TaskType.EPIC;  // Устанавливаем тип задачи как EPIC
+    }
+
+    // Геттер для поля type
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
     public List<Integer> getSubtaskIds() {

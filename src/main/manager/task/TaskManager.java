@@ -1,4 +1,4 @@
-package main.managers.task;
+package main.manager.task;
 
 import main.model.Task;
 import main.model.Epic;

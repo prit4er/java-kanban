@@ -1,2 +1,3 @@
-./test/HistoryManagerTests.java
-./test/TaskManagerTests.java
+./test/task/FileBackedTaskManagerTest.java
+./test/task/TaskManagerTests.java
+./test/history/HistoryManagerTests.java
