@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,7 +66,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTests {
         Task task1 = new Task("Task 1", "Description 1", 1);
         Task task2 = new Task("Task 2", "Description 2", 2);
         Epic epic = new Epic("Epic 1", "Epic description", 3);
-        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW);
+        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW, Duration.ofHours(1),
+                                      LocalDateTime.now());
 
         // Добавляем задачи в менеджер
         manager.addTask(task1);
@@ -83,7 +86,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTests {
         Task task1 = new Task("Task 1", "Description 1", 1);
         Task task2 = new Task("Task 2", "Description 2", 2);
         Epic epic = new Epic("Epic 1", "Epic description", 3);
-        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW);
+        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW, Duration.ofHours(1),
+                                      LocalDateTime.now());
 
         manager.addTask(task1);
         manager.addTask(task2);

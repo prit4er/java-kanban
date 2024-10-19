@@ -5,8 +5,13 @@ import main.model.Epic;
 import main.model.Subtask;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskManager {
+
+    Optional<Task> getTaskById(int id);
+
+    Optional<Subtask> getSubtaskById(int id);
 
     List<Task> getAllTasks();
 

@@ -1,5 +1,7 @@
 package main.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -8,20 +10,33 @@ public class Task {
     private String description;
     private Integer id;
     private Status status;
-    protected TaskType type;  // Новое поле для типа задачи
+    protected TaskType type;  // Тип задачи (TASK, EPIC, SUBTASK)
+    private Duration duration;  // Новое поле для продолжительности
+    private LocalDateTime startTime;  // Время начала задачи
 
     // Основной конструктор
-    public Task(String name, String description, int id, Status status) {
+    public Task(String name, String description, int id, Duration duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = Status.NEW;  // Статус по умолчанию
+        this.type = TaskType.TASK;  // Тип задачи
+        this.duration = duration != null ? duration : Duration.ZERO;  // Продолжительность по умолчанию
+        this.startTime = startTime;  // Время начала
+    }
+
+    public Task(String name, String description, int id, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
-        this.type = TaskType.TASK;  // По умолчанию, тип задачи — TASK
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
-    // Конструктор с установкой статуса по умолчанию
+    // Конструктор без указания времени и продолжительности
     public Task(String name, String description, int id) {
-        this(name, description, id, Status.NEW);
+        this(name, description, id, Duration.ZERO, null);  // Установка значений по умолчанию
     }
 
     // Геттеры и сеттеры
@@ -57,12 +72,34 @@ public class Task {
         this.status = status;
     }
 
-    // Геттер для поля type
     public TaskType getType() {
         return type;
     }
 
-    // Переопределение методов equals и hashCode
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration != null ? duration : Duration.ZERO;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    // Рассчитываем время окончания задачи
+    public LocalDateTime getEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -76,7 +113,6 @@ public class Task {
         return Objects.hash(id);
     }
 
-    // Метод для удобного отображения задачи
     @Override
     public String toString() {
         return "Task{" +
@@ -84,6 +120,8 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", duration=" + duration.toMinutes() + " minutes" +  // Отображаем продолжительность в минутах
+                ", startTime=" + startTime +
                 '}';
     }
 }

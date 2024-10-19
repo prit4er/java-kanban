@@ -18,6 +18,10 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
 
+    // TreeSet для хранения задач, отсортированных по времени начала
+    private final Set<Task> prioritizedTasks = new TreeSet<>(
+            Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
+
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
     }
@@ -35,13 +39,26 @@ public class InMemoryTaskManager implements TaskManager {
     private <T extends Task> T addTaskToMap(Map<Integer, T> map, T task) {
         task.setId(generateId());
         map.put(task.getId(), task);
+        addToPrioritizedTasks(task); // Добавляем задачу в отсортированный список
         return task;
     }
 
     // Общий метод обновления задач, эпиков и подзадач
     private <T extends Task> T updateTaskInMap(Map<Integer, T> map, T task) {
+        removeFromPrioritizedTasks(task); // Удаляем старую версию задачи из отсортированного списка
         map.put(task.getId(), task);
+        addToPrioritizedTasks(task); // Добавляем обновленную версию задачи
         return task;
+    }
+
+    @Override
+    public Optional<Task> getTaskById(int id) {
+        return Optional.ofNullable(tasks.get(id));
+    }
+
+    @Override
+    public Optional<Subtask> getSubtaskById(int id) {
+        return Optional.ofNullable(subtasks.get(id));
     }
 
     @Override
@@ -144,7 +161,7 @@ public class InMemoryTaskManager implements TaskManager {
         return updatedSubtask;
     }
 
-    private void updateEpicStatus(Epic epic) {
+    protected void updateEpicStatus(Epic epic) {
         List<Subtask> subtasks = getSubtasksByEpic(epic.getId());
         if (subtasks.isEmpty()) {
             epic.setStatus(Status.NEW);
@@ -174,7 +191,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        deleteFromMapById(tasks, id);
+        Task task = tasks.remove(id);
+        if (task != null) {
+            removeFromPrioritizedTasks(task); // Удаляем задачу из отсортированного списка
+        }
+        historyManager.remove(id);
     }
 
     @Override
@@ -182,8 +203,9 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.remove(id);
         if (epic != null) {
             for (Integer subtaskId : epic.getSubtaskIds()) {
-                subtasks.remove(subtaskId);
+                Subtask subtask = subtasks.remove(subtaskId);
                 historyManager.remove(subtaskId);
+                removeFromPrioritizedTasks(subtask);
             }
             historyManager.remove(id);
         }
@@ -198,6 +220,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.removeSubtaskId(id);
                 updateEpicStatus(epic);
             }
+            removeFromPrioritizedTasks(subtask); // Удаляем подзадачу из отсортированного списка
             historyManager.remove(id);
         }
     }
@@ -205,6 +228,23 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    // Метод для добавления задачи в приоритезированный список
+    private void addToPrioritizedTasks(Task task) {
+        if (task.getStartTime() != null) {
+            prioritizedTasks.add(task);
+        }
+    }
+
+    // Метод для удаления задачи из приоритезированного списка
+    private void removeFromPrioritizedTasks(Task task) {
+        prioritizedTasks.remove(task);
+    }
+
+    // Метод для получения отсортированных задач
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     private void deleteFromMapById(Map<Integer, ? extends Task> map, int id) {

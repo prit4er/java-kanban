@@ -5,6 +5,9 @@ import main.model.Status;
 import main.model.Subtask;
 import main.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -12,13 +15,15 @@ public class Main {
         TaskManager manager = Managers.getDefault();
 
         // 1. Создаём две задачи
-        Task task1 = new Task("Задача 1", "Описание задачи 1", 1);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", 2);
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
+        Task task2 = new Task("Задача 2", "Описание задачи 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
 
         // 2. Создаём эпик с двумя подзадачами и один пустой эпик
         Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 3);
-        Subtask subtask1 = new Subtask("Подзадача 1 эпика 1", "Описание подзадачи 1", 4, epic1.getId(), Status.NEW);
-        Subtask subtask2 = new Subtask("Подзадача 2 эпика 1", "Описание подзадачи 2", 5, epic1.getId(), Status.IN_PROGRESS);
+        Subtask subtask1 = new Subtask("Подзадача 1 эпика 1", "Описание подзадачи 1", 4, epic1.getId(), Status.NEW, Duration.ofHours(1),
+                                       LocalDateTime.now());
+        Subtask subtask2 = new Subtask("Подзадача 2 эпика 1", "Описание подзадачи 2", 5, epic1.getId(), Status.IN_PROGRESS,
+                                       Duration.ofHours(1), LocalDateTime.now());
         Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6); // Пустой эпик без подзадач
 
         // 3. Добавляем задачи и эпики в менеджер
