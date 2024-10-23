@@ -38,7 +38,7 @@ public class TaskManagerTests {
     @Test
     @DisplayName("2. Проверка равенства наследников класса Task по ID")
     void testSubtaskAndEpicEqualityById() {
-        Epic epic = new Epic("Epic 1", "Description 1", 1);
+        Epic epic = new Epic("Epic 1", "Description 1", 1, Status.NEW); // Добавлено значение статуса
         Subtask subtask = new Subtask("Subtask", "Description", 3, epic.getId(), Status.NEW, Duration.ofHours(1), LocalDateTime.now());
 
         // Проверка, что ID подзадачи и эпика не равны
@@ -57,7 +57,7 @@ public class TaskManagerTests {
     @DisplayName("4. Проверка добавления задач разного типа и их нахождение по ID")
     void testAddDifferentTypesOfTasks() {
         Task task = new Task("Task", "Description", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
-        Epic epic = new Epic("Epic", "Description", 2);
+        Epic epic = new Epic("Epic", "Description", 2, Status.NEW); // Добавлено значение статуса
         Subtask subtask = new Subtask("Subtask", "Description", 3, epic.getId(), Status.NEW, Duration.ofHours(1), LocalDateTime.now());
 
         taskManager.addTask(task);
@@ -73,8 +73,7 @@ public class TaskManagerTests {
     @DisplayName("5. Проверка, что задачи с заданным и сгенерированным ID не конфликтуют")
     void testUniqueIds() {
         Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
-        Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
-
+        Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now().plusHours(1)); // Сдвигаем на 1 час вперед
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
@@ -99,11 +98,11 @@ public class TaskManagerTests {
     @Test
     @DisplayName("7. Обновление эпика должно обновить его детали")
     void updateEpic_shouldUpdateEpicDetails() {
-        Epic originalEpic = new Epic("Original Epic", "Original Description", 1);
+        Epic originalEpic = new Epic("Original Epic", "Original Description", 1, Status.NEW); // Добавлено значение статуса
         taskManager.addEpic(originalEpic);
 
         // Обновляем эпик с новыми данными
-        Epic updatedEpic = new Epic("Updated Epic", "Updated Description", originalEpic.getId());
+        Epic updatedEpic = new Epic("Updated Epic", "Updated Description", originalEpic.getId(), Status.NEW); // Добавлено значение статуса
 
         taskManager.updateEpic(updatedEpic);
 
@@ -115,12 +114,14 @@ public class TaskManagerTests {
 
     @Test
     @DisplayName("8. Проверка удаления задачи")
-    void testDeleteTask() {
-        Task task = new Task("Task to Delete", "Description", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
+    public void testDeleteTask() {
+        int taskId = 1; // Или получить ID из вашего менеджера задач
+        Task task = new Task("Task to Delete", "Description", taskId, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
         taskManager.addTask(task);
 
-        taskManager.deleteTaskById(task.getId());
-        assertNull(taskManager.getTask(task.getId()), "Задача должна быть удалена.");
+        taskManager.removeTask(task.getId()); // Удаляем задачу
+
+        assertNull(taskManager.getTaskById(task.getId()).orElse(null)); // Проверяем, что задача удалена
     }
 
     @Test
@@ -143,12 +144,12 @@ public class TaskManagerTests {
     @Test
     @DisplayName("10. Проверка статусов эпиков")
     void testEpicStatusUpdates() {
-        Epic epic = new Epic("Epic 1", "Description 1", 1);
+        Epic epic = new Epic("Epic 1", "Description 1", 1, Status.NEW);
         taskManager.addEpic(epic);
 
         Subtask subtask1 = new Subtask("Subtask 1", "Description 1", 2, epic.getId(), Status.NEW, Duration.ofHours(1), LocalDateTime.now());
         Subtask subtask2 = new Subtask("Subtask 2", "Description 2", 3, epic.getId(), Status.DONE, Duration.ofHours(1),
-                                       LocalDateTime.now());
+                                       LocalDateTime.now().plusHours(1)); // Сдвигаем на 1 час вперед
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 

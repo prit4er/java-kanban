@@ -3,11 +3,14 @@ package test.history;
 import static org.junit.jupiter.api.Assertions.*;
 
 import main.manager.history.InMemoryHistoryManager;
+import main.model.Status;
 import main.model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class HistoryManagerTests {
@@ -22,7 +25,7 @@ public class HistoryManagerTests {
     @Test
     @DisplayName("1. Проверка добавления задачи в пустую историю")
     void addTaskToEmptyHistory() {
-        Task task = new Task("Task 1", "Description 1", 1);
+        Task task = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
         historyManager.add(task);
 
         List<Task> history = historyManager.getHistory();
@@ -33,7 +36,7 @@ public class HistoryManagerTests {
     @Test
     @DisplayName("2. Проверка дублирования задач в истории")
     void addingDuplicateTasks() {
-        Task task = new Task("Task 1", "Description 1", 1);
+        Task task = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
         historyManager.add(task);
         historyManager.add(task); // Добавляем ту же задачу повторно
 
@@ -44,8 +47,8 @@ public class HistoryManagerTests {
     @Test
     @DisplayName("3. Проверка удаления задачи из начала истории")
     void removeTaskFromBeginning() {
-        Task task1 = new Task("Task 1", "Description 1", 1);
-        Task task2 = new Task("Task 2", "Description 2", 2);
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
+        Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
         historyManager.add(task1);
         historyManager.add(task2);
 
@@ -59,9 +62,9 @@ public class HistoryManagerTests {
     @Test
     @DisplayName("4. Проверка удаления задачи из середины истории")
     void removeTaskFromMiddle() {
-        Task task1 = new Task("Task 1", "Description 1", 1);
-        Task task2 = new Task("Task 2", "Description 2", 2);
-        Task task3 = new Task("Task 3", "Description 3", 3);
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
+        Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
+        Task task3 = new Task("Task 3", "Description 3", 3, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
@@ -77,8 +80,8 @@ public class HistoryManagerTests {
     @Test
     @DisplayName("5. Проверка удаления задачи из конца истории")
     void removeTaskFromEnd() {
-        Task task1 = new Task("Task 1", "Description 1", 1);
-        Task task2 = new Task("Task 2", "Description 2", 2);
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
+        Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now()); // Исправлено
         historyManager.add(task1);
         historyManager.add(task2);
 

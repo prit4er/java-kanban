@@ -19,7 +19,7 @@ public interface TaskManager {
 
     List<Subtask> getAllSubtasks();
 
-    Task addTask(Task task);          // Возвращает добавленный Task
+    void addTask(Task task);          // Возвращает добавленный Task
 
     Epic addEpic(Epic epic);          // Возвращает добавленный Epic
 
@@ -27,11 +27,11 @@ public interface TaskManager {
 
     List<Subtask> getSubtasksByEpic(int epicId);
 
-    Task updateTask(Task task);       // Возвращает обновленный Task
+    void updateTask(Task task);       // Возвращает обновленный Task
 
-    Epic updateEpic(Epic epic);       // Возвращает обновленный Epic
+    void updateEpic(Epic epic);       // Возвращает обновленный Epic
 
-    Subtask updateSubtask(Subtask subtask); // Возвращает обновленный Subtask
+    void updateSubtask(Subtask subtask); // Возвращает обновленный Subtask
 
     void deleteTaskById(int id);
 
@@ -44,6 +44,18 @@ public interface TaskManager {
     Epic getEpic(int id);             // Получение Epic по ID
 
     Subtask getSubtask(int id);       // Получение Subtask по ID
+
+    void removeTask(int id);
+
+    void removeEpic(int id);
+
+    void removeSubtask(int id);
+
+    void clearTasks();
+
+    void clearEpics();
+
+    void clearSubtasks();
 
     List<Task> getHistory();          // Получение истории задач
 }

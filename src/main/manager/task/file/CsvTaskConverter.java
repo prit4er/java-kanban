@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 public class CsvTaskConverter {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     // Приватный метод для базовой части конвертации задачи в строку
     private static String baseTaskToString(Task task) {
@@ -49,7 +49,19 @@ public class CsvTaskConverter {
     // Пример метода для создания задачи из CSV строки (универсальный для всех типов задач)
     public static Task taskFromString(String[] fields) {
         int id = Integer.parseInt(fields[0]);
-        TaskType type = TaskType.valueOf(fields[1]);
+
+        // Проверка на null или пустую строку перед преобразованием
+        if (fields[1] == null || fields[1].isEmpty()) {
+            throw new IllegalArgumentException("Task type cannot be null or empty");
+        }
+
+        TaskType type;
+        try {
+            type = TaskType.valueOf(fields[1]);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown task type: " + fields[1]);
+        }
+
         String name = fields[2];
         Status status = Status.valueOf(fields[3]);
         String description = fields[4];
@@ -58,8 +70,8 @@ public class CsvTaskConverter {
 
         // Используем switch для выбора типа задачи
         return switch (type) {
-            case TASK -> new Task(name, description, id, duration, startTime);
-            case EPIC -> new Epic(name, description, id);  // У эпика могут быть свои особенности
+            case TASK -> new Task(name, description, id, status, duration, startTime);
+            case EPIC -> new Epic(name, description, id, status);
             case SUBTASK -> {
                 int epicId = Integer.parseInt(fields[7]);
                 yield new Subtask(name, description, id, epicId, status, duration, startTime);

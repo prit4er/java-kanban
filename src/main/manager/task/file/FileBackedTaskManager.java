@@ -67,7 +67,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             // Обновление статусов эпиков после загрузки
             for (Epic epic : manager.getAllEpics()) {
-                manager.updateEpicStatus(epic); // обновляем статусы эпиков
+                manager.updateEpicStatus(epic.getId()); // обновляем статусы эпиков
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении данных из файла: " + e.getMessage());
@@ -77,10 +77,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     // Переопределяем методы для добавления и обновления задач с автосохранением
     @Override
-    public Task addTask(Task task) {
+    public void addTask(Task task) {
         super.addTask(task);
         save();
-        return task;
     }
 
     @Override
@@ -98,7 +97,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task updateTask(Task task) {
+    public void updateTask(Task task) {
         Task existingTask = tasks.get(task.getId());
         if (existingTask != null) {
             existingTask.setName(task.getName());
@@ -106,21 +105,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             existingTask.setStatus(task.getStatus());
             save();
         }
-        return existingTask;
     }
 
     @Override
-    public Subtask updateSubtask(Subtask subtask) {
+    public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
         save();
-        return subtask;
     }
 
     @Override
-    public Epic updateEpic(Epic epic) {
+    public void updateEpic(Epic epic) {
         super.updateEpic(epic);
         save();
-        return epic;
     }
 
     // Переопределяем методы удаления задач с автосохранением
@@ -149,9 +145,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             tempFile.deleteOnExit();
 
             FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-            Task task1 = new Task("Task 1", "Description for task 1", 1);
-            Task task2 = new Task("Task 2", "Description for task 2", 2);
-            Epic epic1 = new Epic("Epic 1", "Description for epic 1", 3);
+            Task task1 = new Task("Task 1", "Description for task 1", 1, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
+            Task task2 = new Task("Task 2", "Description for task 2", 2, Status.NEW, Duration.ofHours(1), LocalDateTime.now());
+            Epic epic1 = new Epic("Epic 1", "Description for epic 1", 3, Status.NEW);
             Subtask subtask1 = new Subtask("Subtask 1", "Description for subtask 1", 4, epic1.getId(), Status.NEW, Duration.ofHours(1),
                                            LocalDateTime.now());
             Subtask subtask2 = new Subtask("Subtask 2", "Description for subtask 2", 5, epic1.getId(), Status.NEW, Duration.ofHours(1),

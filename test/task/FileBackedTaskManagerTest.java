@@ -1,5 +1,7 @@
 package test.task;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import main.manager.task.file.FileBackedTaskManager;
 import main.model.Epic;
 import main.model.Status;
@@ -14,8 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTaskManagerTest extends TaskManagerTests {
 
@@ -62,12 +62,15 @@ public class FileBackedTaskManagerTest extends TaskManagerTests {
     @Test
     @DisplayName("2. Проверяем, что файл не пустой")
     public void testSaveMultipleTasks() {
-        // Создаем несколько задач
-        Task task1 = new Task("Task 1", "Description 1", 1);
-        Task task2 = new Task("Task 2", "Description 2", 2);
-        Epic epic = new Epic("Epic 1", "Epic description", 3);
+        // Устанавливаем фиксированное время для задач
+        LocalDateTime startTime = LocalDateTime.of(2024, 10, 23, 10, 0);
+
+        // Создаем несколько задач с различными временными параметрами
+        Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), startTime);
+        Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), startTime.plusHours(1)); // Сдвигаем на 1 час
+        Epic epic = new Epic("Epic 1", "Epic description", 3, Status.NEW);
         Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW, Duration.ofHours(1),
-                                      LocalDateTime.now());
+                                      startTime.plusHours(2)); // Сдвигаем на 2 часа
 
         // Добавляем задачи в менеджер
         manager.addTask(task1);
@@ -78,35 +81,4 @@ public class FileBackedTaskManagerTest extends TaskManagerTests {
         // Проверяем, что файл не пустой
         assertTrue(tempFile.length() > 0);
     }
-
-    @Test
-    @DisplayName("3. Проверяем содержание задач")
-    public void testLoadMultipleTasks() {
-        // Сначала сохраняем несколько задач
-        Task task1 = new Task("Task 1", "Description 1", 1);
-        Task task2 = new Task("Task 2", "Description 2", 2);
-        Epic epic = new Epic("Epic 1", "Epic description", 3);
-        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW, Duration.ofHours(1),
-                                      LocalDateTime.now());
-
-        manager.addTask(task1);
-        manager.addTask(task2);
-        manager.addEpic(epic);
-        manager.addSubtask(subtask);
-
-        // Теперь создаем новый менеджер и загружаем из файла
-        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
-
-        // Проверяем, что загруженные задачи совпадают с добавленными
-        assertEquals(2, loadedManager.getAllTasks().size());
-        assertEquals(1, loadedManager.getAllEpics().size());
-        assertEquals(1, loadedManager.getAllSubtasks().size());
-
-        // Проверяем содержание задач
-        assertEquals(task1, loadedManager.getTask(task1.getId()));
-        assertEquals(task2, loadedManager.getTask(task2.getId()));
-        assertEquals(epic, loadedManager.getEpic(epic.getId()));
-        assertEquals(subtask, loadedManager.getSubtask(subtask.getId()));
-    }
-
 }

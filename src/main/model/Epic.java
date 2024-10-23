@@ -8,24 +8,12 @@ import java.util.Objects;
 
 public class Epic extends Task {
 
-    private final List<Integer> subtaskIds;
-
-    // Новые поля
-    private Duration duration;
-    private LocalDateTime startTime;
+    private final List<Integer> subtaskIds = new ArrayList<>();
     private LocalDateTime endTime;
 
-    public Epic(String name, String description, int id) {
-        super(name, description, id, Duration.ZERO, null);  // Продолжительность и время начала зададим позже
-        this.subtaskIds = new ArrayList<>();
-        this.type = TaskType.EPIC;  // Устанавливаем тип задачи как EPIC
-        this.duration = Duration.ZERO;  // Изначально продолжительность равна нулю
-    }
-
-    // Переопределяем метод getType()
-    @Override
-    public TaskType getType() {
-        return TaskType.EPIC;
+    public Epic(String name, String description, int id, Status status) { // Добавили параметр Status
+        super(name, description, id, status, Duration.ZERO, null); // Передаём статус в конструктор Task
+        this.type = TaskType.EPIC;
     }
 
     public List<Integer> getSubtaskIds() {
@@ -34,77 +22,55 @@ public class Epic extends Task {
 
     public void addSubtaskId(int subtaskId) {
         subtaskIds.add(subtaskId);
-        recalculateEpicFields();  // Пересчитываем поля при добавлении подзадачи
     }
 
     public void removeSubtaskId(int subtaskId) {
         subtaskIds.remove(Integer.valueOf(subtaskId));
-        recalculateEpicFields();  // Пересчитываем поля при удалении подзадачи
     }
 
-    // Метод для пересчета полей эпика (duration, startTime и endTime)
-    public void recalculateEpicFields() {
-        List<Subtask> subtasks = getSubtasksFromManager();  // Метод для получения всех подзадач из менеджера
-
-        if (subtasks.isEmpty()) {
-            this.duration = Duration.ZERO;
-            this.startTime = null;
-            this.endTime = null;
-        } else {
-            this.duration = subtasks.stream()
-                                    .map(Subtask::getDuration)
-                                    .reduce(Duration.ZERO, Duration::plus);  // Суммируем продолжительность всех подзадач
-
-            this.startTime = subtasks.stream()
-                                     .map(Subtask::getStartTime)
-                                     .filter(Objects::nonNull)
-                                     .min(LocalDateTime::compareTo)  // Находим самую раннюю дату старта
-                                     .orElse(null);
-
-            this.endTime = subtasks.stream()
-                                   .map(Subtask::getEndTime)
-                                   .filter(Objects::nonNull)
-                                   .max(LocalDateTime::compareTo)  // Находим самую позднюю дату окончания
-                                   .orElse(null);
-        }
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
     }
 
-    // Метод для получения времени окончания эпика (конец самой поздней подзадачи)
     @Override
     public LocalDateTime getEndTime() {
         return this.endTime;
     }
 
-    // Геттеры для новых полей
-    @Override
-    public Duration getDuration() {
-        return this.duration;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
     }
 
     @Override
-    public LocalDateTime getStartTime() {
-        return this.startTime;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtaskIds, epic.subtaskIds);
     }
 
-    // Метод для получения подзадач эпика (предположительно из менеджера задач)
-    private List<Subtask> getSubtasksFromManager() {
-        // Здесь вы должны реализовать получение списка подзадач эпика из менеджера
-        // Например, с помощью вызова метода в TaskManager, который будет возвращать все подзадачи по ID эпика
-        return new ArrayList<>();
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtaskIds);
     }
 
-    // Переопределение метода toString для отображения полей эпика
     @Override
     public String toString() {
         return "Epic{" +
-                "name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", id=" + getId() +
-                ", status=" + getStatus() +
-                ", duration=" + duration +
+                "subtaskIds=" + subtaskIds +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", subtaskIds=" + subtaskIds +
+                ", duration=" + duration +
                 '}';
     }
 }

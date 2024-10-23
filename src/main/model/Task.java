@@ -5,25 +5,13 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-
-    private String name;
-    private String description;
-    private Integer id;
-    private Status status;
-    protected TaskType type;  // Тип задачи (TASK, EPIC, SUBTASK)
-    private Duration duration;  // Новое поле для продолжительности
-    private LocalDateTime startTime;  // Время начала задачи
-
-    // Основной конструктор
-    public Task(String name, String description, int id, Duration duration, LocalDateTime startTime) {
-        this.name = name;
-        this.description = description;
-        this.id = id;
-        this.status = Status.NEW;  // Статус по умолчанию
-        this.type = TaskType.TASK;  // Тип задачи
-        this.duration = duration != null ? duration : Duration.ZERO;  // Продолжительность по умолчанию
-        this.startTime = startTime;  // Время начала
-    }
+    protected String name;
+    protected String description;
+    protected int id;
+    protected Status status;
+    protected TaskType type;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String name, String description, int id, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
@@ -34,12 +22,14 @@ public class Task {
         this.startTime = startTime;
     }
 
-    // Конструктор без указания времени и продолжительности
-    public Task(String name, String description, int id) {
-        this(name, description, id, Duration.ZERO, null);  // Установка значений по умолчанию
+    public int getId() {
+        return id;
     }
 
-    // Геттеры и сеттеры
+    public void setId(int id) {
+        this.id = id; // исправлен метод для установки id
+    }
+
     public String getName() {
         return name;
     }
@@ -48,20 +38,12 @@ public class Task {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public String getDescription() {
+        return description;
     }
 
     public Status getStatus() {
@@ -80,47 +62,35 @@ public class Task {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
-        this.duration = duration != null ? duration : Duration.ZERO;
-    }
-
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    // Рассчитываем время окончания задачи
     public LocalDateTime getEndTime() {
-        if (startTime != null && duration != null) {
-            return startTime.plus(duration);
-        }
-        return null;
+        return startTime != null ? startTime.plus(duration) : null;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Task task = (Task) obj;
-        return Objects.equals(id, task.id);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name, description, id);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", id=" + id +
                 ", status=" + status +
-                ", duration=" + duration.toMinutes() + " minutes" +  // Отображаем продолжительность в минутах
+                ", duration=" + duration +
                 ", startTime=" + startTime +
                 '}';
     }
