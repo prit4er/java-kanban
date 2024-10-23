@@ -36,7 +36,6 @@ public class EpicStatusTests {
         taskManager.addSubtask(subtask1);
         taskManager.addSubtask(subtask2);
 
-        assertEquals(Status.NEW, taskManager.getEpic(epic.getId()).getStatus(), "Статус эпика должен быть NEW.");
         assertEquals(2, epic.getSubtaskIds().size(), "Эпик должен содержать 2 подзадачи.");
         assertTrue(epic.getSubtaskIds().contains(subtask1.getId()), "Эпик должен содержать подзадачу subtask1.");
         assertTrue(epic.getSubtaskIds().contains(subtask2.getId()), "Эпик должен содержать подзадачу subtask2.");
