@@ -58,4 +58,6 @@ public interface TaskManager {
     void clearSubtasks();
 
     List<Task> getHistory();          // Получение истории задач
+
+    List<Task> getPrioritizedTasks(); // Возвращает список приоритезированных задач
 }

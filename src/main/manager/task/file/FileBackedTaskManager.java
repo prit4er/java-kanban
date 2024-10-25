@@ -169,7 +169,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             for (Epic epic : loadedManager.getAllEpics()) {
                 System.out.println(epic);
-                for (Integer subtaskId : epic.getSubtaskIds()) {
+                for (Integer subtaskId : epic.getSubtask()) {
                     System.out.println("  " + loadedManager.getSubtask(subtaskId));
                 }
             }
