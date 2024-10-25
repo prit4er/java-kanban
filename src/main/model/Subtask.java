@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Subtask extends Task {
-    private final int epicId;
+    private int epicId;
 
     public Subtask(String name, String description, int id, int epicId, Status status, Duration duration, LocalDateTime startTime) {
         super(name, description, id, status, duration, startTime);
@@ -15,6 +15,10 @@ public class Subtask extends Task {
 
     public int getEpicId() {
         return epicId;
+    }
+
+    public void setEpicId(Integer epicId) {
+        this.epicId = epicId;
     }
 
     @Override

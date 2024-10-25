@@ -5,9 +5,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
+
     protected String name;
     protected String description;
-    protected int id;
+    protected Integer id;
     protected Status status;
     protected TaskType type;
     protected Duration duration;
@@ -22,7 +23,7 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -38,12 +39,12 @@ public class Task {
         this.name = name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Status getStatus() {
@@ -62,12 +63,24 @@ public class Task {
         return duration;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public LocalDateTime getEndTime() {
         return startTime != null ? startTime.plus(duration) : null;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        endTime = startTime.plus(this.duration);
     }
 
     @Override
