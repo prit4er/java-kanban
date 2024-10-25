@@ -5,35 +5,28 @@ import main.model.Task;
 
 import java.time.LocalDateTime;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TaskScheduler {
-    // Список задач
-    private final List<Task> tasks;
+    // Константа для длительности слота
+    private static final int SLOT_DURATION_MINUTES = 15;
     private final Map<LocalDateTime, Boolean> timeSlots; // Хранит занятые интервалы
 
     public TaskScheduler() {
-        tasks = new ArrayList<>();
         timeSlots = new HashMap<>();
     }
 
     // Метод для проверки доступности времени
     public boolean isTimeAvailable(LocalDateTime startTime, Duration duration) {
-        long totalSlots = duration.toMinutes() / 15; // Количество 15-минутных интервалов
         LocalDateTime endTime = startTime.plus(duration);
-
-        // Проверка каждого 15-минутного интервала
-        for (long i = 0; i < totalSlots; i++) {
-            LocalDateTime slot = startTime.plusMinutes(i * 15);
-            Boolean isSlotFree = timeSlots.get(slot);
-            if (isSlotFree == null || !isSlotFree) {
-                System.out.println("Занятое время: " + slot);
+        while (startTime.isBefore(endTime)) {
+            Boolean isSlotFree = timeSlots.get(startTime);
+            if (isSlotFree != null && !isSlotFree) {
+                System.out.println("Занятое время: " + startTime);
                 return false; // Найден занятый интервал
             }
+            startTime = startTime.plusMinutes(SLOT_DURATION_MINUTES);
         }
         return true; // Все интервалы свободны
     }
@@ -42,43 +35,36 @@ public class TaskScheduler {
     public void scheduleTask(String title, LocalDateTime startTime, Duration duration) {
         if (isTimeAvailable(startTime, duration)) {
             Task task = new Task(title, "Описание задачи", 0, Status.NEW, duration, startTime);
-            tasks.add(task);
+            LocalDateTime endTime = startTime.plus(duration);
 
             // Обновляем занятые интервалы
-            long totalSlots = duration.toMinutes() / 15;
-            for (long i = 0; i < totalSlots; i++) {
-                LocalDateTime slot = startTime.plusMinutes(i * 15);
-                timeSlots.put(slot, true); // Помечаем как занятый
+            while (startTime.isBefore(endTime)) {
+                timeSlots.put(startTime, true); // Помечаем как занятый
+                startTime = startTime.plusMinutes(SLOT_DURATION_MINUTES);
             }
-
-            // Сортируем задачи по времени начала для упрощения будущих проверок
-            tasks.sort(Comparator.comparing(Task::getStartTime)); // Удалены скобки
-            System.out.println("Задача успешно добавлена в расписание.");
+            System.out.println("Задача успешно добавлена в расписание: " + task.getName()
+                                       + " Начало: " + task.getStartTime()
+                                       + " Длительность: " + task.getDuration().toMinutes() + " минут.");
         } else {
             System.out.println("Время занято. Невозможно запланировать задачу.");
-        }
-    }
-
-    // Вспомогательный метод для вывода списка задач
-    public void printSchedule() {
-        for (Task task : tasks) {
-            System.out.println(task);
         }
     }
 
     public static void main(String[] args) {
         TaskScheduler scheduler = new TaskScheduler();
 
-        LocalDateTime task1StartTime = LocalDateTime.now().plusMinutes(15);
-        Duration task1Duration = Duration.ofMinutes(30);
+        // Время начала первой задачи: через 15 минут
+        LocalDateTime task1StartTime = LocalDateTime.now().plusMinutes(SLOT_DURATION_MINUTES);
+        Duration task1Duration = Duration.ofMinutes(30); // Длительность задачи: 30 минут
 
+        // Планируем первую задачу
         scheduler.scheduleTask("Task 1", task1StartTime, task1Duration);
-        scheduler.printSchedule();
 
-        LocalDateTime task2StartTime = task1StartTime.plusMinutes(45); // Попробуем запланировать задачу на 45 минут позже
-        Duration task2Duration = Duration.ofMinutes(30);
+        // Время начала второй задачи: через 45 минут после начала первой задачи
+        LocalDateTime task2StartTime = task1StartTime.plusMinutes(45); // Смещение использует константу
+        Duration task2Duration = Duration.ofMinutes(30); // Длительность второй задачи: 30 минут
 
+        // Планируем вторую задачу
         scheduler.scheduleTask("Task 2", task2StartTime, task2Duration);
-        scheduler.printSchedule();
     }
 }
