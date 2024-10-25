@@ -89,6 +89,6 @@ public class HistoryManagerTests {
 
         List<Task> history = historyManager.getHistory();
         assertEquals(1, history.size(), "История должна содержать одну задачу после удаления.");
-        assertEquals(task1, history.get(0), "История не содержит ожидаемую задачу.");
+        assertEquals(task1, history.getFirst(), "История не содержит ожидаемую задачу.");
     }
 }

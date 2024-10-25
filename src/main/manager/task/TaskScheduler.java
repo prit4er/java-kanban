@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TaskScheduler {
+
     // Константа для длительности слота
     private static final int SLOT_DURATION_MINUTES = 15;
     private final Map<LocalDateTime, Boolean> timeSlots; // Хранит занятые интервалы

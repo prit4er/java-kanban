@@ -39,7 +39,7 @@ public class Main {
 
         // 4. Запрашиваем задачи в разном порядке и выводим историю
         System.out.println("Запрашиваем task1");
-        manager.getTask(task1.getId());
+        manager.getTaskById(task1.getId());
         printHistory(manager);
 
         System.out.println("Запрашиваем epic1");
@@ -47,15 +47,15 @@ public class Main {
         printHistory(manager);
 
         System.out.println("Запрашиваем subtask1");
-        manager.getSubtask(subtask1.getId());
+        manager.getSubtaskById(subtask1.getId());
         printHistory(manager);
 
         System.out.println("Запрашиваем task2");
-        manager.getTask(task2.getId());
+        manager.getTaskById(task2.getId());
         printHistory(manager);
 
         System.out.println("Запрашиваем subtask2");
-        manager.getSubtask(subtask2.getId());
+        manager.getSubtaskById(subtask2.getId());
         printHistory(manager);
 
         // 5. Удаляем задачу task1 и проверяем, что она исчезла из истории

@@ -110,17 +110,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     // Вспомогательный метод, который непосредственно проверяет, пересекаются ли две конкретные задачи
     private boolean taskTimesOverlap(Task existingTask, Task newTask) {
-        if (existingTask.getStartTime() == null || newTask.getStartTime() == null) {
-            return false; // Если время старта не задано, пересечения не будет
+        if (existingTask.getStartTime() == null || newTask.getStartTime() == null ||
+                existingTask.getDuration() == null || newTask.getDuration() == null) {
+            return false; // Если время старта или длительность не заданы, пересечения не будет
         }
-        return existingTask.getStartTime().isBefore(newTask.getEndTime()) &&
-                newTask.getStartTime().isBefore(existingTask.getEndTime());
+
+        LocalDateTime existingEndTime = existingTask.getStartTime().plus(existingTask.getDuration());
+        LocalDateTime newEndTime = newTask.getStartTime().plus(newTask.getDuration());
+
+        return existingTask.getStartTime().isBefore(newEndTime) &&
+                newTask.getStartTime().isBefore(existingEndTime);
     }
 
     // Проверка, пересекаются ли два временных интервала
     private boolean areTimeIntervalsOverlapping(Task task1, Task task2) {
-        return task1.getStartTime().isBefore(task2.getEndTime()) &&
-                task2.getStartTime().isBefore(task1.getEndTime());
+        // Проверяем, что время начала и длительность обеих задач не равны null
+        if (task1.getStartTime() == null || task2.getStartTime() == null ||
+                task1.getDuration() == null || task2.getDuration() == null) {
+            return false; // Если время или длительность не заданы, пересечения не будет
+        }
+
+        LocalDateTime endTime1 = task1.getStartTime().plus(task1.getDuration());
+        LocalDateTime endTime2 = task2.getStartTime().plus(task2.getDuration());
+
+        return task1.getStartTime().isBefore(endTime2) && task2.getStartTime().isBefore(endTime1);
     }
 
     @Override
@@ -157,16 +170,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic addEpic(Epic epic) {
-        // Проверка на совпадение ID с существующими задачами и подзадачами
-        if (tasks.containsKey(epic.getId()) || subtasks.containsKey(epic.getId())) {
-            throw new IllegalArgumentException("ID эпика не может совпадать с ID существующих задач или подзадач.");
-        }
-
-        // Генерация нового ID для эпика
-        epic.setId(generateId()); // Генерируем уникальный ID для эпика
-        epics.put(epic.getId(), epic); // Добавление эпика в коллекцию
-
-        // Здесь не добавляем эпик в prioritizedTasks, чтобы избежать пересечений
+        // Убираем проверку на совпадение ID с задачами и подзадачами
+        epics.put(epic.getId(), epic);
         return epic;
     }
 
