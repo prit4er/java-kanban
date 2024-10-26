@@ -77,9 +77,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     // Переопределяем методы для добавления и обновления задач с автосохранением
     @Override
-    public void addTask(Task task) {
+    public Task addTask(Task task) {
         super.addTask(task);
         save();
+        return task;
     }
 
     @Override
@@ -121,20 +122,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     // Переопределяем методы удаления задач с автосохранением
     @Override
-    public void deleteTaskById(int id) {
-        super.deleteTaskById(id);
+    public void removeTask(int id) {
+        super.removeTask(id);
         save();
     }
 
     @Override
-    public void deleteEpicById(int id) {
-        super.deleteEpicById(id);
+    public void removeEpic(int id) {
+        super.removeEpic(id);
         save();
     }
 
     @Override
-    public void deleteSubtaskById(int id) {
-        super.deleteSubtaskById(id);
+    public void removeSubtask(int id) {
+        super.removeSubtask(id);
         save();
     }
 

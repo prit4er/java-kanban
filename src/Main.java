@@ -39,7 +39,7 @@ public class Main {
 
         // 4. Запрашиваем задачи в разном порядке и выводим историю
         System.out.println("Запрашиваем task1");
-        manager.getTaskById(task1.getId());
+        manager.getTask(task1.getId());
         printHistory(manager);
 
         System.out.println("Запрашиваем epic1");
@@ -47,25 +47,25 @@ public class Main {
         printHistory(manager);
 
         System.out.println("Запрашиваем subtask1");
-        manager.getSubtaskById(subtask1.getId());
+        manager.getSubtask(subtask1.getId());
         printHistory(manager);
 
         System.out.println("Запрашиваем task2");
-        manager.getTaskById(task2.getId());
+        manager.getTask(task2.getId());
         printHistory(manager);
 
         System.out.println("Запрашиваем subtask2");
-        manager.getSubtaskById(subtask2.getId());
+        manager.getSubtask(subtask2.getId());
         printHistory(manager);
 
         // 5. Удаляем задачу task1 и проверяем, что она исчезла из истории
         System.out.println("Удаляем task1");
-        manager.deleteTaskById(task1.getId());
+        manager.removeTask(task1.getId());
         printHistory(manager);
 
         // 6. Удаляем эпик с подзадачами и проверяем, что он и подзадачи исчезли из истории
         System.out.println("Удаляем epic1");
-        manager.deleteEpicById(epic1.getId());
+        manager.removeEpic(epic1.getId());
         printHistory(manager);
     }
 

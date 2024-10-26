@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TaskManagerTests {
 
@@ -148,7 +149,7 @@ public class TaskManagerTests {
 
         taskManager.removeTask(task.getId()); // Удаляем задачу
 
-        assertNull(taskManager.getTaskById(task.getId()).orElse(null)); // Проверяем, что задача удалена
+        assertNull(taskManager.getTask(task.getId())); // Проверяем, что задача удалена
     }
 
     @Test
@@ -191,19 +192,18 @@ public class TaskManagerTests {
         LocalDateTime now = LocalDateTime.now();
 
         // Создаем первую задачу с продолжительностью 2 часа
-        Task task1 = createTask("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(2), now); taskManager.addTask(task1);
+        Task task1 = createTask("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(2), now);
+        taskManager.addTask(task1);
 
         // Создаем вторую задачу с пересекающимся временем (начинается через 1 час)
-        Task task2 = createTask("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), now.plusHours(1));
+        Task task2 = createTask("Task 2", "Description 2", 4, Status.NEW, Duration.ofHours(1), now.plusHours(1));
 
         // Проверяем, что вторая задача не добавляется из-за пересечения
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> taskManager.addTask(task2),
-                                           "Должно возникнуть исключение при добавлении пересекающейся задачи."); assertEquals(
-                "Задачи пересекаются по времени.", exception.getMessage(), "Сообщение об ошибке должно быть корректным.");
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> taskManager.addTask(task2));
+        assertEquals("Задачи пересекаются по времени.", exception.getMessage());
 
         // Убедитесь, что task2 не добавилась
-        assertTrue(taskManager.getTaskById(task2.getId()).isEmpty(),
-                   "Вторая задача не должна быть найдена, так как она не была добавлена.");
+        assertNull(taskManager.getTask(task2.getId()));
     }
 
     @Test
@@ -223,6 +223,7 @@ public class TaskManagerTests {
                 taskManager.getTask(task2.getId()), "Вторая задача должна быть успешно добавлена.");
     }
 
+
     @Test
     @DisplayName("13. Проверка пересечения подзадач в рамках эпика")
     void testSubtaskTimeOverlap() {
@@ -234,7 +235,7 @@ public class TaskManagerTests {
         taskManager.addSubtask(subtask1);
 
         // Создаем вторую подзадачу с пересекающимся временем
-        Subtask subtask2 = createSubtask("Subtask 2", "Description 2", 3, epic.getId(), Status.NEW, Duration.ofHours(2), now.plusHours(1));
+        Subtask subtask2 = createSubtask("Subtask 2", "Description 2", 4, epic.getId(), Status.NEW, Duration.ofHours(2), now.plusHours(1));
 
         // Проверяем, что вторая подзадача не добавляется из-за пересечения
         Exception exception = assertThrows(IllegalArgumentException.class, () -> taskManager.addSubtask(subtask2),
