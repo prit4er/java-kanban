@@ -305,7 +305,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearSubtasks() {
-        subtasks.clear(); // Очистка подзадач
+        // Удаляем все подзадачи из списка приоритетных задач и истории
+        for (Subtask subtask : subtasks.values()) {
+            prioritizedTasks.remove(subtask);
+            historyManager.remove(subtask.getId());
+        }
+
+        // Очистка всех подзадач из эпиков
+        for (Epic epic : epics.values()) {
+            epic.getSubtask().clear();
+            updateEpicStatus(epic); // Обновление статуса эпика
+            updateEpicPeriod(epic); // Обновление временных полей эпика
+        }
+
+        // Очищаем подзадачи
+        subtasks.clear();
     }
 
     private void addToPrioritizedTasks(Task task) {
