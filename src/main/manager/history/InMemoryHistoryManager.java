@@ -70,11 +70,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
-    @Override
-    public void clear() {
-        history.clear(); // Очистка истории задач
-    }
-
     // Добавляем задачу в конец списка
     private void linkLast(Task task) {
         Node newNode = new Node(task);

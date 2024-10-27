@@ -67,7 +67,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             // Обновление статусов эпиков после загрузки
             for (Epic epic : manager.getAllEpics()) {
-                manager.updateEpicStatus(epic.getId()); // обновляем статусы эпиков
+                manager.updateEpicStatus(epic); // обновляем статусы эпиков
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении данных из файла: " + e.getMessage());

@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface TaskManager {
 
-    Task addTask(Task task);          // Возвращает добавленный Task
+    Task addTask(Task task);
 
-    Epic addEpic(Epic epic);          // Возвращает добавленный Epic
+    Epic addEpic(Epic epic);
 
-    Subtask addSubtask(Subtask subtask); // Возвращает добавленный Subtask
+    Subtask addSubtask(Subtask subtask);
 
     List<Task> getAllTasks();
 
@@ -20,17 +20,17 @@ public interface TaskManager {
 
     List<Subtask> getAllSubtasks();
 
-    void updateTask(Task task);       // Возвращает обновленный Task
+    void updateTask(Task task);
 
-    void updateEpic(Epic epic);       // Возвращает обновленный Epic
+    void updateEpic(Epic epic);
 
-    void updateSubtask(Subtask subtask); // Возвращает обновленный Subtask
+    void updateSubtask(Subtask subtask);
 
-    Task getTask(int id);             // Получение Task по ID
+    Task getTask(int id);
 
-    Epic getEpic(int id);             // Получение Epic по ID
+    Epic getEpic(int id);
 
-    Subtask getSubtask(int id);       // Получение Subtask по ID
+    Subtask getSubtask(int id);
 
     void removeTask(int id);
 
@@ -46,7 +46,7 @@ public interface TaskManager {
 
     void clearSubtasks();
 
-    List<Task> getHistory();          // Получение истории задач
+    List<Task> getHistory();
 
-    List<Task> getPrioritizedTasks(); // Возвращает список приоритезированных задач
+    List<Task> getPrioritizedTasks();
 }
