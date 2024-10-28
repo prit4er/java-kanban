@@ -5,21 +5,29 @@ import main.model.Status;
 import main.model.Subtask;
 import main.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) {
-        // Получаем TaskManager через фабрику Managers
         TaskManager manager = Managers.getDefault();
 
-        // 1. Создаём две задачи
-        Task task1 = new Task("Задача 1", "Описание задачи 1", 1);
-        Task task2 = new Task("Задача 2", "Описание задачи 2", 2);
+        // Задаем фиксированное время для начала задач
+        LocalDateTime now = LocalDateTime.now();
 
-        // 2. Создаём эпик с двумя подзадачами и один пустой эпик
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 3);
-        Subtask subtask1 = new Subtask("Подзадача 1 эпика 1", "Описание подзадачи 1", 4, epic1.getId(), Status.NEW);
-        Subtask subtask2 = new Subtask("Подзадача 2 эпика 1", "Описание подзадачи 2", 5, epic1.getId(), Status.IN_PROGRESS);
-        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6); // Пустой эпик без подзадач
+        // 1. Создаём две задачи с разными временами
+        Task task1 = new Task("Задача 1", "Описание задачи 1", 1, Status.NEW, Duration.ofHours(1), now);
+        Task task2 = new Task("Задача 2", "Описание задачи 2", 2, Status.NEW, Duration.ofHours(1),
+                              now.plusHours(1)); // Смещаем на 1 час
+
+        // 2. Создаём эпик с двумя подзадачами с разными временами
+        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1", 3, Status.NEW);
+        Subtask subtask1 = new Subtask("Подзадача 1 эпика 1", "Описание подзадачи 1", 4, epic1.getId(), Status.NEW, Duration.ofHours(1),
+                                       now.plusHours(2)); // Смещаем на 2 часа
+        Subtask subtask2 = new Subtask("Подзадача 2 эпика 1", "Описание подзадачи 2", 5, epic1.getId(), Status.IN_PROGRESS,
+                                       Duration.ofHours(1), now.plusHours(3)); // Смещаем на 3 часа
+        Epic epic2 = new Epic("Эпик 2", "Описание эпика 2", 6, Status.NEW);
 
         // 3. Добавляем задачи и эпики в менеджер
         manager.addTask(task1);
@@ -52,12 +60,12 @@ public class Main {
 
         // 5. Удаляем задачу task1 и проверяем, что она исчезла из истории
         System.out.println("Удаляем task1");
-        manager.deleteTaskById(task1.getId());
+        manager.removeTask(task1.getId());
         printHistory(manager);
 
         // 6. Удаляем эпик с подзадачами и проверяем, что он и подзадачи исчезли из истории
         System.out.println("Удаляем epic1");
-        manager.deleteEpicById(epic1.getId());
+        manager.removeEpic(epic1.getId());
         printHistory(manager);
     }
 

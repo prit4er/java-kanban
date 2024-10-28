@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
+    private final List<Task> history = new ArrayList<>();
+
     private static final int HISTORY_LIMIT = 10; // Ограничение на 10 задач в истории
 
     // Узел двусвязного списка

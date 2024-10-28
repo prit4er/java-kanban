@@ -8,37 +8,45 @@ import java.util.List;
 
 public interface TaskManager {
 
+    Task addTask(Task task);
+
+    Epic addEpic(Epic epic);
+
+    Subtask addSubtask(Subtask subtask);
+
     List<Task> getAllTasks();
 
     List<Epic> getAllEpics();
 
     List<Subtask> getAllSubtasks();
 
-    Task addTask(Task task);          // Возвращает добавленный Task
+    void updateTask(Task task);
 
-    Epic addEpic(Epic epic);          // Возвращает добавленный Epic
+    void updateEpic(Epic epic);
 
-    Subtask addSubtask(Subtask subtask); // Возвращает добавленный Subtask
+    void updateSubtask(Subtask subtask);
+
+    Task getTask(int id);
+
+    Epic getEpic(int id);
+
+    Subtask getSubtask(int id);
+
+    void removeTask(int id);
+
+    void removeEpic(int id);
+
+    void removeSubtask(int id);
 
     List<Subtask> getSubtasksByEpic(int epicId);
 
-    Task updateTask(Task task);       // Возвращает обновленный Task
+    void clearTasks();
 
-    Epic updateEpic(Epic epic);       // Возвращает обновленный Epic
+    void clearEpics();
 
-    Subtask updateSubtask(Subtask subtask); // Возвращает обновленный Subtask
+    void clearSubtasks();
 
-    void deleteTaskById(int id);
+    List<Task> getHistory();
 
-    void deleteEpicById(int id);
-
-    void deleteSubtaskById(int subtaskId);
-
-    Task getTask(int id);             // Получение Task по ID
-
-    Epic getEpic(int id);             // Получение Epic по ID
-
-    Subtask getSubtask(int id);       // Получение Subtask по ID
-
-    List<Task> getHistory();          // Получение истории задач
+    List<Task> getPrioritizedTasks();
 }
