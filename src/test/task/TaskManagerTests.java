@@ -379,15 +379,15 @@ public class TaskManagerTests {
     @DisplayName("Пересечения 7. Проверка обновления подзадачи с пересечением времени")
     void testUpdateSubtaskWithTimeConflict() {
         LocalDateTime now = LocalDateTime.now();
-        Epic epic = createEpic("Epic 1", "Description 1", 1, Status.NEW);
+        Epic epic = createEpic("Epic 1", "Description 1", 0, Status.NEW);
         taskManager.addEpic(epic);
 
         // Создаем первую подзадачу
-        Subtask subtask1 = createSubtask("Subtask 1", "Description 1", 2, epic.getId(), Status.NEW, Duration.ofHours(2), now);
+        Subtask subtask1 = createSubtask("Subtask 1", "Description 1", 0, epic.getId(), Status.NEW, Duration.ofHours(2), now);
         taskManager.addSubtask(subtask1);
 
         // Создаем вторую подзадачу, которая будет пересекаться по времени с первой
-        Subtask subtask2 = createSubtask("Subtask 2", "Description 2", 3, epic.getId(), Status.NEW, Duration.ofHours(2), now.plusHours(1));
+        Subtask subtask2 = createSubtask("Subtask 2", "Description 2", 1, epic.getId(), Status.NEW, Duration.ofHours(2), now.plusHours(1));
 
         // Добавляем вторую подзадачу
         taskManager.addSubtask(subtask2);

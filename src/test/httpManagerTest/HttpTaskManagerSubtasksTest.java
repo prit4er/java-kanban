@@ -44,6 +44,7 @@ public class HttpTaskManagerSubtasksTest {
         manager.clearEpics();
         manager.clearSubtasks();
         taskServer.start();
+
     }
 
     @AfterEach
@@ -53,16 +54,15 @@ public class HttpTaskManagerSubtasksTest {
 
     @Test
     public void testAddSubtask() throws IOException, InterruptedException {
-        Epic epic = new Epic("Эпик 1", "Организовать путешествие", 1, Status.NEW);
+        Epic epic = new Epic("Эпик 1", "Организовать путешествие", 0, Status.NEW);
         manager.addEpic(epic);
 
         Subtask subtask = new Subtask("Купить шпатель",
                                       "Выбрать в магазине шпатель и купить",
-                                      1, epic.getId(), Status.NEW, Duration.ofMinutes(45),
+                                      0, epic.getId(), Status.NEW, Duration.ofMinutes(45),
                                       LocalDateTime.of(2024, 10, 1, 12, 30, 0));
 
         String taskJson = gson.toJson(subtask);
-        System.out.println("Добавлена подзадача с ID: " + subtask.getId());
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/subtasks");
@@ -85,18 +85,18 @@ public class HttpTaskManagerSubtasksTest {
 
     @Test
     public void shouldAddSubtaskById() throws IOException, InterruptedException {
-        Epic epic = new Epic("Эпик 1", "Организовать путешествие", 1, Status.NEW);
+        Epic epic = new Epic("Эпик 1", "Организовать путешествие", 0, Status.NEW);
         manager.addEpic(epic);
 
         Subtask subtask = new Subtask("Купить шпатель",
                                       "Выбрать в магазине шпатель и купить",
-                                      1, epic.getId(), Status.NEW, Duration.ofMinutes(45),
+                                      0, epic.getId(), Status.NEW, Duration.ofMinutes(45),
                                       LocalDateTime.of(2024, 10, 1, 12, 30, 0));
         manager.addSubtask(subtask);
 
         Subtask updatedSubtask = new Subtask("Обновленная подзадача",
                                              "Выбрать в магазине шпатель и купить",
-                                             1, epic.getId(), Status.NEW, Duration.ofMinutes(45),
+                                             subtask.getId(), epic.getId(), Status.NEW, Duration.ofMinutes(45),
                                              LocalDateTime.of(2024, 10, 1, 12, 30, 0));
 
         String subtaskJson = gson.toJson(updatedSubtask);
@@ -110,7 +110,6 @@ public class HttpTaskManagerSubtasksTest {
                                          .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         assertEquals(201, response.statusCode());
 
         List<Subtask> subtasksFromManager = manager.getAllSubtasks();
@@ -161,12 +160,12 @@ public class HttpTaskManagerSubtasksTest {
 
     @Test
     public void shouldGetSubtaskById() throws IOException, InterruptedException {
-        Epic epic = new Epic("Сделать ремонт", "Покрасить стены на балконе", 1, Status.NEW);
+        Epic epic = new Epic("Сделать ремонт", "Покрасить стены на балконе", 0, Status.NEW);
         manager.addEpic(epic);
 
         Subtask subtask = new Subtask("подзадача 1",
                                       "Выбрать в магазине шпатель и купить",
-                                      1, epic.getId(), Status.DONE, Duration.ofMinutes(45),
+                                      0, epic.getId(), Status.DONE, Duration.ofMinutes(45),
                                       LocalDateTime.of(2024, 10, 1, 12, 30, 0));
         manager.addSubtask(subtask);
 
@@ -188,13 +187,12 @@ public class HttpTaskManagerSubtasksTest {
 
     @Test
     public void shouldDeleteSubtaskById() throws IOException, InterruptedException {
-        Epic epic = new Epic("Сделать ремонт", "Покрасить стены на балконе", 1, Status.NEW);
-
+        Epic epic = new Epic("Сделать ремонт", "Покрасить стены на балконе", 0, Status.NEW);
         manager.addEpic(epic);
 
         Subtask subtask = new Subtask("подзадача 1",
                                       "Выбрать в магазине шпатель и купить",
-                                      1, epic.getId(), Status.DONE, Duration.ofMinutes(45),
+                                      0, epic.getId(), Status.DONE, Duration.ofMinutes(45),
                                       LocalDateTime.of(2024, 10, 1, 12, 30, 0));
         manager.addSubtask(subtask);
 
@@ -210,7 +208,7 @@ public class HttpTaskManagerSubtasksTest {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, response.statusCode());
+        assertEquals(204, response.statusCode());
         assertNull(manager.getSubtask(1), "Подзадача не удалена.");
     }
 }

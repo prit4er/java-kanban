@@ -11,6 +11,7 @@ import main.model.Task;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class EpicHandler extends BaseHttpHandler {
 
@@ -23,25 +24,30 @@ public class EpicHandler extends BaseHttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        String method = exchange.getRequestMethod();
+        String path = exchange.getRequestURI().getPath();
+
         try {
-            String method = exchange.getRequestMethod();
-            String path = exchange.getRequestURI().getPath();
-            try {
-                switch (method) {
-                    case "GET" -> handleGetEpic(exchange, path);
-                    case "POST" -> handlePostEpic(exchange, path);
-                    case "DELETE" -> handleDeleteEpic(exchange, path);
-                    default -> sendError(exchange, 405, "Метод не поддерживается");
-                }
-            } catch (Exception e) {
-                handleException(exchange, e);
+            switch (method) {
+                case "GET":
+                    handleGetEpic(exchange, path);
+                    break;
+                case "POST":
+                    handlePostEpic(exchange, path);
+                    break;
+                case "DELETE":
+                    handleDeleteEpic(exchange, path);
+                    break;
+                default:
+                    sendError(exchange, 405, "Метод не поддерживается");
             }
+        } catch (Exception e) {
+            handleException(exchange, e);
         } finally {
             exchange.close();
         }
     }
 
-    //Обработка GET-запросов для получения списка эпиков, эпика по ID или подзадач эпика.
     private void handleGetEpic(HttpExchange exchange, String path) throws IOException {
         if (path.equals("/epics")) {
             List<Epic> epics = manager.getAllEpics();
@@ -53,69 +59,76 @@ public class EpicHandler extends BaseHttpHandler {
                 return;
             }
 
-            if (path.matches("/epics/\\d+")) {
-                Task epic = manager.getEpic(id);
-                if (epic != null) {
-                    sendResponse(exchange, gson.toJson(epic), 200);
-                } else {
-                    sendNotFound(exchange);
-                }
-            } else if (path.matches("/epics/\\d+/subtasks")) {
-                List<Subtask> subtasks = manager.getSubtasksByEpic(id);
-                if (subtasks != null) {
-                    sendResponse(exchange, gson.toJson(subtasks), 200);
-                } else {
-                    sendNotFound(exchange);
-                }
+            if (path.endsWith("/subtasks")) {
+                handleGetSubtasks(exchange, id);
             } else {
-                sendError(exchange, 404, "Эндпоинт не найден");
+                handleGetEpicById(exchange, id);
             }
         }
     }
 
-    //Обработка POST-запросов для создания или обновления эпика.
-    private void handlePostEpic(HttpExchange exchange, String path) throws IOException {
-        if (path.matches("/epics(/\\d+)?")) {
-            String body = readRequestBody(exchange);
-            try {
-                Epic epic = gson.fromJson(body, Epic.class);
-                if (epic == null) {
-                    sendError(exchange, 400, "Некорректный JSON формат");
-                    return;
-                }
+    private void handleGetSubtasks(HttpExchange exchange, int epicId) throws IOException {
+        List<Subtask> subtasks = manager.getSubtasksByEpic(epicId);
+        sendResponse(exchange, gson.toJson(subtasks), subtasks.isEmpty() ? 404 : 200);
+    }
 
-                if (path.matches("/epics/\\d+")) {
-                    // Обновление существующего эпика
-                    int epicId = parseIdFromPath(path);
-                    if (epic.getId() == 0 || epic.getId() != epicId) {
-                        sendError(exchange, 400, "Неверный ID");
-                        return;
-                    }
-
-                    try {
-                        manager.updateTask(epic);
-                        sendResponse(exchange, "Эпик обновлен", 200);
-                    } catch (NotFoundException e) {
-                        sendNotFound(exchange);
-                    }
-                } else {
-                    // Создание нового эпика
-                    if (epic.getId() != 0) {
-                        sendError(exchange, 400, "ID должен быть равен 0 при создании нового эпика");
-                        return;
-                    }
-                    manager.addEpic(epic);
-                    sendResponse(exchange, "Эпик создан", 201);
-                }
-            } catch (JsonSyntaxException e) {
-                sendError(exchange, 400, "Некорректный JSON формат: " + e.getMessage());
-            }
+    private void handleGetEpicById(HttpExchange exchange, int epicId) throws IOException {
+        Optional<Epic> epic = Optional.ofNullable(manager.getEpic(epicId));
+        if (epic.isPresent()) {
+            sendResponse(exchange, gson.toJson(epic.get()), 200);
         } else {
-            sendError(exchange, 404, "Эндпоинт не найден");
+            sendNotFound(exchange);
         }
     }
 
-    //Обработка DELETE-запросов для удаления эпика по ID или всех эпиков.
+    private void handlePostEpic(HttpExchange exchange, String path) throws IOException {
+        if (!path.matches("/epics(/\\d+)?")) {
+            sendError(exchange, 404, "Эндпоинт не найден");
+            return;
+        }
+
+        String body = readRequestBody(exchange);
+        try {
+            Epic epic = gson.fromJson(body, Epic.class);
+            if (epic == null) {
+                sendError(exchange, 400, "Некорректный JSON формат");
+                return;
+            }
+
+            if (path.matches("/epics/\\d+")) {
+                updateEpic(exchange, epic);
+            } else {
+                createEpic(exchange, epic);
+            }
+        } catch (JsonSyntaxException e) {
+            sendError(exchange, 400, "Некорректный JSON формат: " + e.getMessage());
+        }
+    }
+
+    private void createEpic(HttpExchange exchange, Epic epic) throws IOException {
+        if (epic.getId() != 0) {
+            sendError(exchange, 400, "ID должен быть равен 0 при создании нового эпика");
+            return;
+        }
+        manager.addEpic(epic);
+        sendResponse(exchange, "Эпик создан", 201);
+    }
+
+    private void updateEpic(HttpExchange exchange, Epic epic) throws IOException {
+        int epicId = parseIdFromPath(exchange.getRequestURI().getPath());
+        if (epic.getId() == 0 || epic.getId() != epicId) {
+            sendError(exchange, 400, "Неверный ID");
+            return;
+        }
+
+        try {
+            manager.updateTask(epic);
+            sendResponse(exchange, "Эпик обновлен", 200);
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        }
+    }
+
     private void handleDeleteEpic(HttpExchange exchange, String path) throws IOException {
         if (path.matches("/epics/\\d+")) {
             int id = parseIdFromPath(path);
@@ -137,7 +150,6 @@ public class EpicHandler extends BaseHttpHandler {
         }
     }
 
-    //Извлекает последний числовой ID из пути запроса.
     private int parseIdFromPath(String path) {
         String[] segments = path.split("/");
         for (int i = segments.length - 1; i >= 0; i--) {

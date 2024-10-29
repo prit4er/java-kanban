@@ -89,13 +89,13 @@ public class HttpTaskManagerTasksTest {
     }
 
     @Test
-    public void shouldAddTaskById() throws IOException, InterruptedException {
-        Task task = new Task("Тест1", "Тест1", 1, Status.NEW,
+    public void shouldUpdateTaskById() throws IOException, InterruptedException {
+        Task task = new Task("Тест1", "Тест1", 0, Status.NEW,
                              Duration.ofMinutes(45),
                              LocalDateTime.of(2024, 10, 2, 12, 30, 0));
         manager.addTask(task);
 
-        Task taskForAddById = new Task("Тест1", "Тест1 - обновленная", 1, Status.NEW,
+        Task taskForAddById = new Task("Тест1", "Тест1 - обновленная", 1, Status.IN_PROGRESS,
                                        Duration.ofMinutes(45),
                                        LocalDateTime.of(2024, 10, 2, 12, 30, 0));
 
@@ -103,12 +103,12 @@ public class HttpTaskManagerTasksTest {
         URI url = URI.create("http://localhost:8080/tasks/1");
         HttpResponse<String> response = sendRequest("POST", url, taskJson);
 
-        assertEquals(201, response.statusCode());
+        assertEquals(200, response.statusCode());
 
         List<Task> tasksFromManager = manager.getAllTasks();
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("Тесть 1 обновленная", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals("Тест1", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
     }
 
     @Test
@@ -120,17 +120,14 @@ public class HttpTaskManagerTasksTest {
 
         Task task2 = new Task("Тест2", "Тест2", 2, Status.NEW,
                               Duration.ofMinutes(45),
-                              LocalDateTime.of(2024, 10, 2, 12, 30, 0));
+                              LocalDateTime.of(2024, 10, 2, 14, 30, 0));
         manager.addTask(task2);
 
         URI url = URI.create("http://localhost:8080/tasks");
         HttpResponse<String> response = sendRequest("GET", url, null);
 
-        class TaskListTypeToken extends TypeToken<ArrayList<Task>> {
-
-        }
-
-        ArrayList<Task> tasks = gson.fromJson(response.body(), new TaskListTypeToken().getType());
+        ArrayList<Task> tasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
+        }.getType());
 
         assertEquals(200, response.statusCode());
         assertEquals("Тест1", tasks.get(0).getName(), "Некорректное имя задачи");
@@ -155,7 +152,7 @@ public class HttpTaskManagerTasksTest {
 
     @Test
     public void shouldDeleteTaskById() throws IOException, InterruptedException {
-        Task task = new Task("Тест1", "Тест1", 1, Status.NEW,
+        Task task = new Task("Тест1", "Тест1", 0, Status.NEW,
                              Duration.ofMinutes(45),
                              LocalDateTime.of(2024, 10, 2, 12, 30, 0));
         manager.addTask(task);
@@ -165,7 +162,7 @@ public class HttpTaskManagerTasksTest {
         URI url = URI.create("http://localhost:8080/tasks/1");
         HttpResponse<String> response = sendRequest("DELETE", url, null);
 
-        assertEquals(200, response.statusCode());
+        assertEquals(204, response.statusCode());
         assertNull(manager.getTask(1), "Задача не удалена.");
     }
 }

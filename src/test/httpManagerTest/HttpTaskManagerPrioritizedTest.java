@@ -86,6 +86,7 @@ public class HttpTaskManagerPrioritizedTest {
         class PrioritizedListTypeToken extends TypeToken<List<Task>> {
 
         }
+
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         List<Task> responsePrioritized = gson.fromJson(response.body(), new PrioritizedListTypeToken().getType());
 

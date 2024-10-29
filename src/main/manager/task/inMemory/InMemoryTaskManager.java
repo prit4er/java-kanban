@@ -14,7 +14,9 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private int currentId = 0;  // Счётчик для генерации уникальных идентификаторов
+    private int currenEpictId = 0;  // Счётчик для генерации уникальных идентификаторов
+    private int currentSubtaskId = 0;  // Счётчик для генерации уникальных идентификаторов подзадач
+    private int currentTaskId = 0;
     protected final Map<Integer, Task> tasks = new HashMap<>(); // Хранение всех задач
     protected final Map<Integer, Epic> epics = new HashMap<>(); // Хранение всех эпиков
     protected final Map<Integer, Subtask> subtasks = new HashMap<>(); // Хранение всех подзадач
@@ -33,8 +35,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // Генерация уникального идентификатора
-    private int generateId() {
-        return ++currentId;
+    private int generateEpicId() {
+        return ++currenEpictId;
+    }
+
+    private int generateSubtaskId() {
+        return ++currentSubtaskId;
+    }
+
+    private int generateTaskId() {
+        return ++currentTaskId;
     }
 
     // Метод для проверки пересечений задач по времени с использованием отсортированного списка
@@ -72,7 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public Task addTask(Task task) {
         checkTimeConflict(task);
-        task.setId(generateId()); // Устанавливаем уникальный ID
+        task.setId(generateTaskId()); // Устанавливаем уникальный ID
         tasks.put(task.getId(), task); // Добавляем задачу в Map
         addToPrioritizedTasks(task); // Добавляем задачу в отсортированный список
         return task; // Если нужно возвращать добавленную задачу
@@ -80,7 +90,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic addEpic(Epic epic) {
-        epic.setId(generateId()); // Устанавливаем уникальный ID
+        epic.setId(generateEpicId()); // Устанавливаем уникальный ID
         epics.put(epic.getId(), epic);
 
         // Обновляем статус и временные поля после добавления эпика
@@ -93,18 +103,22 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask addSubtask(Subtask subtask) {
         checkTimeConflict(subtask);
+
         Epic epic = epics.get(subtask.getEpicId());
         if (epic == null) {
-            throw new IllegalArgumentException("Эпик с таким ID не существует."); // Исключение, если эпик не найден
+            throw new IllegalArgumentException("Эпик с таким ID не существует.");
         }
 
-        subtask.setId(generateId()); // Устанавливаем уникальный ID
-        subtasks.put(subtask.getId(), subtask); // Добавление подзадачи
-        epic.addSubtaskId(subtask.getId()); // Добавление ID подзадачи в эпик
+        subtask.setId(generateSubtaskId());
+        subtasks.put(subtask.getId(), subtask);
+        epic.setSubtaskId(subtask.getId());
 
-        updateEpicStatus(epic); // Обновление статуса эпика
-        updateEpicPeriod(epic); // Обновление временных полей эпика
-        prioritizedTasks.add(subtask); // Добавление подзадачи в приоритетный список
+        updateEpicStatus(epic);
+        updateEpicPeriod(epic);
+
+        if (subtask.getStartTime() != null) {
+            prioritizedTasks.add(subtask);
+        }
 
         return subtask;
     }
