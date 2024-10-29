@@ -68,8 +68,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTests {
         // Создаем несколько задач с различными временными параметрами
         Task task1 = new Task("Task 1", "Description 1", 1, Status.NEW, Duration.ofHours(1), startTime);
         Task task2 = new Task("Task 2", "Description 2", 2, Status.NEW, Duration.ofHours(1), startTime.plusHours(1)); // Сдвигаем на 1 час
-        Epic epic = new Epic("Epic 1", "Epic description", 3, Status.NEW);
-        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 4, epic.getId(), Status.NEW, Duration.ofHours(1),
+        Epic epic = new Epic("Epic 1", "Epic description", 1, Status.NEW);
+        Subtask subtask = new Subtask("Subtask 1", "Subtask description", 1, epic.getId(), Status.NEW, Duration.ofHours(1),
                                       startTime.plusHours(2)); // Сдвигаем на 2 часа
 
         // Добавляем задачи в менеджер
