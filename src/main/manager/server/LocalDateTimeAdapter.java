@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // статический форматтер
 
     // Сериализация LocalDateTime в JSON

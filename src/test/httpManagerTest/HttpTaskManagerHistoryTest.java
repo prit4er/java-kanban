@@ -24,6 +24,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpTaskManagerHistoryTest {
+
     private TaskManager manager;
     private HttpTaskServer taskServer;
     private Gson gson;
@@ -80,7 +81,8 @@ public class HttpTaskManagerHistoryTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Десериализация ответа
-        List<Task> responseHistory = gson.fromJson(response.body(), new TypeToken<List<Task>>(){}.getType());
+        List<Task> responseHistory = gson.fromJson(response.body(), new TypeToken<List<Task>>() {
+        }.getType());
 
         // Проверка кода статуса и истории
         assertEquals(200, response.statusCode());

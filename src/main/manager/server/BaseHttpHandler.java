@@ -24,17 +24,14 @@ abstract class BaseHttpHandler implements HttpHandler {
     protected void sendResponse(HttpExchange exchange, String response, int statusCode) throws IOException {
         byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
 
-        // Set Content-Type if not already set
         if (!exchange.getResponseHeaders().containsKey("Content-Type")) {
             exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
         }
 
-        // Set content length for the response
         long contentLength = (statusCode == 204 || responseBytes.length == 0) ? -1 : responseBytes.length;
 
         exchange.sendResponseHeaders(statusCode, contentLength);
 
-        // Write response if there's content
         if (contentLength > 0) {
             try (OutputStream os = exchange.getResponseBody()) {
                 os.write(responseBytes);

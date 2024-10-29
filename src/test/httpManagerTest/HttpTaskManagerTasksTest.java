@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpTaskManagerTasksTest {
+
     private TaskManager manager = new InMemoryTaskManager();
     private HttpTaskServer taskServer = new HttpTaskServer(manager);
     private Gson gson = HttpTaskServer.getGson();
@@ -126,6 +127,7 @@ public class HttpTaskManagerTasksTest {
         HttpResponse<String> response = sendRequest("GET", url, null);
 
         class TaskListTypeToken extends TypeToken<ArrayList<Task>> {
+
         }
 
         ArrayList<Task> tasks = gson.fromJson(response.body(), new TaskListTypeToken().getType());

@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class HttpTaskManagerEpicsTest {
+
     private TaskManager manager;
     private HttpTaskServer taskServer;
     private Gson gson;
@@ -121,7 +122,8 @@ public class HttpTaskManagerEpicsTest {
                                          .build();
 
         HttpResponse<String> response = sendRequest(request);
-        List<Epic> epics = gson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>(){}.getType());
+        List<Epic> epics = gson.fromJson(response.body(), new TypeToken<ArrayList<Epic>>() {
+        }.getType());
 
         assertEquals(200, response.statusCode());
         assertEquals("Эпик 1", epics.get(0).getName(), "Некорректное имя эпика");
@@ -170,8 +172,8 @@ public class HttpTaskManagerEpicsTest {
                                        "Выбрать в магазине шпатель и купить",
                                        7, epic1.getId(), Status.DONE, Duration.ofMinutes(45),
                                        LocalDateTime.of(2024, 10, 1, 12, 30, 0));
-        Subtask subtask2 = new Subtask("Купить краску","Выбрать краску и купить",
-                                        7, epic1.getId(), Status.DONE, Duration.ofMinutes(45),
+        Subtask subtask2 = new Subtask("Купить краску", "Выбрать краску и купить",
+                                       7, epic1.getId(), Status.DONE, Duration.ofMinutes(45),
                                        LocalDateTime.of(2024, 10, 1, 13, 30, 0));
 
 
@@ -187,7 +189,8 @@ public class HttpTaskManagerEpicsTest {
                                          .build();
 
         HttpResponse<String> response = sendRequest(request);
-        ArrayList<Integer> responseSubtasksIds = gson.fromJson(response.body(), new TypeToken<ArrayList<Integer>>(){}.getType());
+        ArrayList<Integer> responseSubtasksIds = gson.fromJson(response.body(), new TypeToken<ArrayList<Integer>>() {
+        }.getType());
 
         assertEquals(200, response.statusCode());
         assertNotNull(responseSubtasksIds, "Id не получены от сервера.");

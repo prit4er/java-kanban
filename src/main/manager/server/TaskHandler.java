@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 class TaskHandler extends BaseHttpHandler {
+
     private final TaskManager manager;
 
     public TaskHandler(TaskManager manager, Gson gson) {

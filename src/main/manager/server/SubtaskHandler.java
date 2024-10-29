@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class SubtaskHandler extends BaseHttpHandler {
+
     private final TaskManager manager;
 
     public SubtaskHandler(TaskManager manager, Gson gson) {

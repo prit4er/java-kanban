@@ -62,6 +62,7 @@ public class HttpTaskManagerSubtasksTest {
                                       LocalDateTime.of(2024, 10, 1, 12, 30, 0));
 
         String taskJson = gson.toJson(subtask);
+        System.out.println("Добавлена подзадача с ID: " + subtask.getId());
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/subtasks");
@@ -135,7 +136,6 @@ public class HttpTaskManagerSubtasksTest {
                                        1, epic.getId(), Status.NEW, Duration.ofMinutes(45),
                                        LocalDateTime.of(2024, 10, 1, 13, 30, 0));
         manager.addSubtask(subtask2);
-
 
 
         HttpClient client = HttpClient.newHttpClient();

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class HistoryHandler extends BaseHttpHandler {
+
     private final TaskManager manager;
 
     public HistoryHandler(TaskManager manager, Gson gson) {

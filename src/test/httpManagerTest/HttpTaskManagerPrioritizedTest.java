@@ -23,6 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpTaskManagerPrioritizedTest {
+
     private TaskManager manager;
     private HttpTaskServer taskServer;
     private Gson gson;
@@ -83,6 +84,7 @@ public class HttpTaskManagerPrioritizedTest {
 
         // Десериализация ответа
         class PrioritizedListTypeToken extends TypeToken<List<Task>> {
+
         }
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         List<Task> responsePrioritized = gson.fromJson(response.body(), new PrioritizedListTypeToken().getType());
