@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 import main.manager.exceptions.NotFoundException;
 import main.manager.task.TaskManager;
 import main.model.Subtask;
-import main.model.Task;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -53,7 +52,7 @@ public class SubtaskHandler extends BaseHttpHandler {
             sendResponse(exchange, gson.toJson(subtasks), 200);
         } else if (path.matches("/subtasks/\\d+")) {
             int id = parseIdFromPath(path);
-            Task subtask = manager.getSubtask(id);
+            Subtask subtask = manager.getSubtask(id);
             if (subtask == null) {
                 sendNotFound(exchange);
             } else {
@@ -92,8 +91,8 @@ public class SubtaskHandler extends BaseHttpHandler {
                     }
 
                     try {
-                        manager.updateTask(subtask);
-                        sendResponse(exchange, "Подзадача обновлена", 200);
+                        manager.updateSubtask(subtask);
+                        sendResponse(exchange, "Подзадача обновлена", 201);
                     } catch (NotFoundException e) {
                         sendResponse(exchange, "Подзадача с таким id не найдена", 404);
                     }

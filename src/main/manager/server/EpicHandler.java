@@ -7,7 +7,6 @@ import main.manager.exceptions.NotFoundException;
 import main.manager.task.TaskManager;
 import main.model.Epic;
 import main.model.Subtask;
-import main.model.Task;
 
 import java.io.IOException;
 import java.util.List;
@@ -122,8 +121,8 @@ public class EpicHandler extends BaseHttpHandler {
         }
 
         try {
-            manager.updateTask(epic);
-            sendResponse(exchange, "Эпик обновлен", 200);
+            manager.updateEpic(epic);
+            sendResponse(exchange, "Эпик обновлена", 201);
         } catch (NotFoundException e) {
             sendNotFound(exchange);
         }
@@ -137,7 +136,7 @@ public class EpicHandler extends BaseHttpHandler {
                 return;
             }
             if (manager.getEpic(id) != null) {
-                manager.removeTask(id);
+                manager.removeEpic(id);
                 sendResponse(exchange, "Эпик удален", 200);
             } else {
                 sendNotFound(exchange);

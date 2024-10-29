@@ -87,7 +87,7 @@ class TaskHandler extends BaseHttpHandler {
                     }
                 } else {
                     manager.addTask(task);
-                    sendResponse(exchange, "Задача создана", 201);
+                    sendResponse(exchange, "Задача обновлена", 201);
                 }
             } catch (JsonSyntaxException e) {
                 sendResponse(exchange, "Некорректный JSON формат", 400);

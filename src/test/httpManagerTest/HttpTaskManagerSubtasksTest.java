@@ -96,7 +96,7 @@ public class HttpTaskManagerSubtasksTest {
 
         Subtask updatedSubtask = new Subtask("Обновленная подзадача",
                                              "Выбрать в магазине шпатель и купить",
-                                             subtask.getId(), epic.getId(), Status.NEW, Duration.ofMinutes(45),
+                                             1, epic.getId(), Status.NEW, Duration.ofMinutes(45),
                                              LocalDateTime.of(2024, 10, 1, 12, 30, 0));
 
         String subtaskJson = gson.toJson(updatedSubtask);

@@ -87,13 +87,13 @@ public class HttpTaskManagerEpicsTest {
         Epic epic = new Epic("Эпик 1", "Организовать путешествие", 0, Status.NEW);
         manager.addEpic(epic); // Получаем добавленный эпик
 
-        Epic epicForUpdate = new Epic("Эпик обновленный", "Организовать путешествие", epic.getId(), Status.IN_PROGRESS);
+        Epic epicForUpdate = new Epic("Эпик обновленный", "и еще что то", 1, Status.IN_PROGRESS);
         epicForUpdate.setStartTime(LocalDateTime.now());
         epicForUpdate.setEndTime(LocalDateTime.now());
-        epicForUpdate.setDuration(Duration.ofMinutes(0));
+        epicForUpdate.setDuration(Duration.ofMinutes(60));
 
         String epicJson = gson.toJson(epicForUpdate);
-        URI url = URI.create("http://localhost:8080/epics/" + epic.getId());
+        URI url = URI.create("http://localhost:8080/epics/1");
         HttpRequest request = HttpRequest.newBuilder()
                                          .uri(url)
                                          .POST(HttpRequest.BodyPublishers.ofString(epicJson))
@@ -101,9 +101,6 @@ public class HttpTaskManagerEpicsTest {
                                          .build();
 
         HttpResponse<String> response = sendRequest(request);
-
-        System.out.println(manager.getAllEpics());
-        System.out.println(epic.getId());
 
         assertEquals(201, response.statusCode());
 
@@ -156,9 +153,6 @@ public class HttpTaskManagerEpicsTest {
     public void shouldDeleteEpicById() throws IOException, InterruptedException {
         Epic epic = new Epic("Эпик 1", "Организовать путешествие", 0, Status.NEW);
         manager.addEpic(epic);
-        System.out.println("id эпика после добавления: " + epic.getId());
-
-        System.out.println("id эпика " + epic.getId());
 
         URI url = URI.create("http://localhost:8080/epics/1");
         HttpRequest request = HttpRequest.newBuilder()
@@ -167,8 +161,6 @@ public class HttpTaskManagerEpicsTest {
                                          .version(HttpClient.Version.HTTP_1_1)
                                          .build();
 
-        System.out.println("Эпики перед удалением: " + manager.getAllEpics());
-        System.out.println("id эпика после добавления: " + epic.getId());
         HttpResponse<String> response = sendRequest(request);
 
         assertEquals(200, response.statusCode());
@@ -199,7 +191,8 @@ public class HttpTaskManagerEpicsTest {
                                          .build();
 
         HttpResponse<String> response = sendRequest(request);
-        ArrayList<Subtask> responseSubtasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Subtask>>() {}.getType());
+        ArrayList<Subtask> responseSubtasks = gson.fromJson(response.body(), new TypeToken<ArrayList<Subtask>>() {
+        }.getType());
         ArrayList<Integer> responseSubtasksIds = new ArrayList<>();
         for (Subtask subtask : responseSubtasks) {
             responseSubtasksIds.add(subtask.getId());
