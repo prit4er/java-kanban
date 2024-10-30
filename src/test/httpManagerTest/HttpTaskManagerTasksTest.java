@@ -35,7 +35,7 @@ public class HttpTaskManagerTasksTest {
     }
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         manager.clearTasks();
         manager.clearSubtasks();
         manager.clearEpics();
@@ -72,7 +72,7 @@ public class HttpTaskManagerTasksTest {
 
     @Test
     public void testAddTask() throws IOException, InterruptedException {
-        Task task = new Task("Тест1", "Тест1", 1, Status.NEW,
+        Task task = new Task("Тест1", "Тест1", 0, Status.NEW,
                              Duration.ofMinutes(45),
                              LocalDateTime.of(2024, 10, 2, 12, 30, 0));
 
@@ -85,7 +85,7 @@ public class HttpTaskManagerTasksTest {
         List<Task> tasksFromManager = manager.getAllTasks();
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("Тест1", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals("Тест1", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
     }
 
     @Test
@@ -108,7 +108,7 @@ public class HttpTaskManagerTasksTest {
         List<Task> tasksFromManager = manager.getAllTasks();
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("Тест1", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals("Тест1", tasksFromManager.getFirst().getName(), "Некорректное имя задачи");
     }
 
     @Test

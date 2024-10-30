@@ -24,7 +24,7 @@ public class HistoryHandler extends BaseHttpHandler {
             if ("GET".equals(method)) {
                 handleGet(exchange);
             } else {
-                sendError(exchange, 405, "Метод не поддерживается");
+                sendError(exchange, "Метод не поддерживается", 405);
             }
         } catch (Exception e) {
             handleException(exchange, e);
