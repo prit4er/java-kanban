@@ -10,7 +10,6 @@ import main.model.Subtask;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public class EpicHandler extends BaseHttpHandler {
 
@@ -38,7 +37,7 @@ public class EpicHandler extends BaseHttpHandler {
                     handleDeleteEpic(exchange, path);
                     break;
                 default:
-                    sendError(exchange, 405, "Метод не поддерживается");
+                    sendError(exchange, "Метод не поддерживается", 405);
             }
         } catch (Exception e) {
             handleException(exchange, e);
@@ -54,7 +53,7 @@ public class EpicHandler extends BaseHttpHandler {
         } else {
             int id = parseIdFromPath(path);
             if (id == -1) {
-                sendError(exchange, 400, "Некорректный ID эпика");
+                sendError(exchange, "Некорректный ID эпика", 400);
                 return;
             }
 
@@ -72,9 +71,9 @@ public class EpicHandler extends BaseHttpHandler {
     }
 
     private void handleGetEpicById(HttpExchange exchange, int epicId) throws IOException {
-        Optional<Epic> epic = Optional.ofNullable(manager.getEpic(epicId));
-        if (epic.isPresent()) {
-            sendResponse(exchange, gson.toJson(epic.get()), 200);
+        Epic epic = manager.getEpic(epicId);
+        if (epic != null) {
+            sendResponse(exchange, gson.toJson(epic), 200);
         } else {
             sendNotFound(exchange);
         }
@@ -82,7 +81,7 @@ public class EpicHandler extends BaseHttpHandler {
 
     private void handlePostEpic(HttpExchange exchange, String path) throws IOException {
         if (!path.matches("/epics(/\\d+)?")) {
-            sendError(exchange, 404, "Эндпоинт не найден");
+            sendError(exchange, "Эндпоинт не найден", 404);
             return;
         }
 
@@ -90,7 +89,7 @@ public class EpicHandler extends BaseHttpHandler {
         try {
             Epic epic = gson.fromJson(body, Epic.class);
             if (epic == null) {
-                sendError(exchange, 400, "Некорректный JSON формат");
+                sendError(exchange, "Некорректный JSON формат", 400);
                 return;
             }
 
@@ -100,13 +99,13 @@ public class EpicHandler extends BaseHttpHandler {
                 createEpic(exchange, epic);
             }
         } catch (JsonSyntaxException e) {
-            sendError(exchange, 400, "Некорректный JSON формат: " + e.getMessage());
+            sendError(exchange, "Некорректный JSON формат: " + e.getMessage(), 400);
         }
     }
 
     private void createEpic(HttpExchange exchange, Epic epic) throws IOException {
         if (epic.getId() != 0) {
-            sendError(exchange, 400, "ID должен быть равен 0 при создании нового эпика");
+            sendError(exchange, "ID должен быть равен 0 при создании нового эпика", 400);
             return;
         }
         manager.addEpic(epic);
@@ -116,7 +115,7 @@ public class EpicHandler extends BaseHttpHandler {
     private void updateEpic(HttpExchange exchange, Epic epic) throws IOException {
         int epicId = parseIdFromPath(exchange.getRequestURI().getPath());
         if (epic.getId() == 0 || epic.getId() != epicId) {
-            sendError(exchange, 400, "Неверный ID");
+            sendError(exchange, "Неверный ID", 400);
             return;
         }
 
@@ -132,7 +131,7 @@ public class EpicHandler extends BaseHttpHandler {
         if (path.matches("/epics/\\d+")) {
             int id = parseIdFromPath(path);
             if (id == -1) {
-                sendError(exchange, 400, "Некорректный ID эпика");
+                sendError(exchange, "Некорректный ID эпика", 400);
                 return;
             }
             if (manager.getEpic(id) != null) {
@@ -145,7 +144,7 @@ public class EpicHandler extends BaseHttpHandler {
             manager.clearEpics();
             sendResponse(exchange, "Все эпики удалены", 200);
         } else {
-            sendError(exchange, 404, "Эндпоинт не найден");
+            sendError(exchange, "Эндпоинт не найден", 404);
         }
     }
 

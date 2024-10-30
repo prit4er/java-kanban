@@ -51,37 +51,30 @@ abstract class BaseHttpHandler implements HttpHandler {
         sendResponse(exchange, "{\"error\":\"Not Found\"}", 404);
     }
 
-    protected void sendHasInteractions(HttpExchange exchange) throws IOException {
-        sendResponse(exchange, "{\"error\":\"Conflict\"}", 406);
-    }
-
     protected void handleException(HttpExchange exchange, Exception e) throws IOException {
         e.printStackTrace();
-        try {
-            // Check and send appropriate error response based on exception type
+        try (exchange) {
             if (!exchange.getResponseHeaders().containsKey("Content-Type")) {
-                if (e instanceof ManagerIOException) {
-                    sendError(exchange, 500, "Внутренняя ошибка сервера: " + e.getMessage());
-                } else if (e instanceof NotFoundException) {
+                try {
+                    throw e;
+                } catch (ManagerIOException managerException) {
+                    sendError(exchange, "Внутренняя ошибка сервера: " + managerException.getMessage(), 500);
+                } catch (NotFoundException notFoundException) {
                     sendNotFound(exchange);
-                } else if (e instanceof ValidationException) {
-                    sendHasInteractions(exchange);
-                } else if (e instanceof JsonSyntaxException) {
-                    sendError(exchange, 400, "Получен некорректный JSON: " + e.getMessage());
-                } else {
-                    sendError(exchange, 500, "Произошла непредвиденная ошибка: " + e.getMessage());
+                } catch (ValidationException validationException) {
+                    sendError(exchange, "Ошибка валидации: " + validationException.getMessage(), 422);
+                } catch (JsonSyntaxException jsonSyntaxException) {
+                    sendError(exchange, "Некорректный JSON: " + jsonSyntaxException.getMessage(), 400);
+                } catch (Exception generalException) {
+                    sendError(exchange, "Произошла непредвиденная ошибка: " + generalException.getMessage(), 500);
                 }
             } else {
                 System.err.println("Ошибка обработки запроса после отправки заголовков: " + e.getMessage());
             }
-        } catch (Exception innerException) {
-            innerException.printStackTrace();
-        } finally {
-            exchange.close();
         }
     }
 
-    protected void sendError(HttpExchange exchange, int statusCode, String message) throws IOException {
+    protected void sendError(HttpExchange exchange, String message, int statusCode) throws IOException {
         if (exchange.getResponseHeaders().containsKey("Content-Type")) {
             return;
         }

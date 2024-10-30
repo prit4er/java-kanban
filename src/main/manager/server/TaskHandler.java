@@ -8,6 +8,8 @@ import main.manager.task.TaskManager;
 import main.model.Task;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 class TaskHandler extends BaseHttpHandler {
@@ -37,10 +39,9 @@ class TaskHandler extends BaseHttpHandler {
                     handleDeleteTask(exchange, path);
                     break;
                 default:
-                    exchange.sendResponseHeaders(405, -1); // Method Not Allowed
+                    exchange.sendResponseHeaders(405, -1); // Метод не разрешен
             }
         } catch (Exception e) {
-            e.printStackTrace();
             handleException(exchange, e);
         }
     }
@@ -63,22 +64,32 @@ class TaskHandler extends BaseHttpHandler {
     }
 
     private void handlePostTask(HttpExchange exchange, String path) throws IOException {
-        if (isTasksEndpoint(path) || isTaskWithIdEndpoint(path)) {
+        if (path.matches("/tasks(/\\d+)?")) {
             try {
                 String body = readRequestBody(exchange);
                 Task task = gson.fromJson(body, Task.class);
 
                 if (task == null) {
-                    sendResponse(exchange, "Некорректный JSON формат", 400);
+                    sendError(exchange, "Некорректный JSON формат", 400);
                     return;
                 }
 
-                if (isTaskWithIdEndpoint(path)) {
+                // Установка значений по умолчанию
+                if (task.getStartTime() == null) {
+                    task.setStartTime(LocalDateTime.now());
+                }
+                if (task.getDuration() == null) {
+                    task.setDuration(Duration.ZERO);
+                }
+
+                if (path.matches("/tasks/\\d+")) { // Обработка пути /tasks/{id}
                     int taskId = parseIdFromPath(path);
+
                     if (task.getId() != taskId) {
                         sendResponse(exchange, "Неверный id", 400);
                         return;
                     }
+
                     try {
                         manager.updateTask(task);
                         sendResponse(exchange, "Задача обновлена", 200);
@@ -86,6 +97,11 @@ class TaskHandler extends BaseHttpHandler {
                         sendResponse(exchange, "Задача с таким id не найдена", 404);
                     }
                 } else {
+                    if (task.getId() != 0) {
+                        sendError(exchange, "Неверный id (для новой задачи id должен быть 0)", 400);
+                        return;
+                    }
+
                     manager.addTask(task);
                     sendResponse(exchange, "Задача обновлена", 201);
                 }
